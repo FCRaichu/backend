@@ -27,9 +27,9 @@ spring:
 jwt:
   secret: CD9KEjLo1DkQB6EMWo8RZPl2i8XAxv4RLVNAC3dmdVf
   access-token:
-    expire-time: 1800000
+    expire-time: 3600000 # 1000 * 60 * 60 = 1시간
   refresh-token:
-    expire-time: 1209600000
+    expire-time: 604800000 # 1000 * 60 * 60 * 24 * 7 = 7일
 
 
 # 테스트용
