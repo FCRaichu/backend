@@ -87,6 +87,8 @@ public class jwtTest {
         String userNameFromToken = jwtTokenProvider.getUserNameFromToken(jwtToken.getAccessToken());
         System.out.println(userNameFromToken);
 
+        System.out.println("jwtToken.getGrantType() = " + jwtToken.getGrantType());
+
     }
 
     @Test

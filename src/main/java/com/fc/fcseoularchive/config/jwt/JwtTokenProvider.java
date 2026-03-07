@@ -22,17 +22,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-/**
- * https://guswls28.tistory.com/137?category=1125498
- * 공부많이 된다.
- */
-
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
     private final SecretKey key;
-    private final UserDetailsService userDetailsService; // 스프링 시큐리티에서 제공하는 사용자 조회용 인터페이스임
     private final RedisDao redisDao;
 
     private static final String GRANT_TYPE = "Bearer";
@@ -43,11 +37,10 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-token.expire-time}") // 7일으로 설정
     private long REFRESH_TOKEN_EXPIRE_TIME;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, UserDetailsService userDetailsService, RedisDao redisDao) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, RedisDao redisDao) {
 
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.userDetailsService = userDetailsService;
         this.redisDao = redisDao;
     }
 
@@ -65,7 +58,7 @@ public class JwtTokenProvider {
         String userRole = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
-                .orElse("ROLE_USER");
+                .orElse("USER");
 
         // AccessToken 생성하기
         Date accessTokenExpire = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);

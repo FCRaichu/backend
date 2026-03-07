@@ -14,12 +14,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableRedisRepositories
 public class RedisConfig {
 
-    // apllication.yml에서 host, port 값 주입하기
+    // 환경변수 에서 host, port 값 주입하기
     @Value("${spring.data.redis.host}")
     private String host;
 
     @Value("${spring.data.redis.port}")
     private int port;
+
+
 
     // Redis 연결 팩토리 설정하기
     @Bean
@@ -38,7 +40,7 @@ public class RedisConfig {
     // RedisTemplate 설정하기
     // RedisTemplate은 DB 서버에 Set, Get, Delete 등을 사용할 수 있음
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory redisConnectionFactory){
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
         // RedisTemplate는 트랜잭션을 지원함.
         // 트랜잭션 안에서 오류가 발생한다면 -> 그 작업 모두 취소 가능
 
