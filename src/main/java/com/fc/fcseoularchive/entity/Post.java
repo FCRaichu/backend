@@ -6,11 +6,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -44,7 +41,7 @@ public class Post {
     // 초깃값 SUBMITTED
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostStatus status = PostStatus.SUBMITTED;
+    private PostStatus status = PostStatus.PENDING;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
@@ -62,7 +59,7 @@ public class Post {
         this.title = title;
         this.content = content;
         this.ticketImage = ticketImage;
-        this.status = (status != null) ? status : PostStatus.SUBMITTED;
+        this.status = (status != null) ? status : PostStatus.PENDING;
     }
 
     @PrePersist

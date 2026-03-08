@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class PostService {
         // 시즌권 사용 여부에 따라 Post 의 상태 정의
         PostStatus status = (user.getSeasonTicket() != null)
                 ? PostStatus.APPROVED // 시즌권 유저는 바로 APPROVED
-                : PostStatus.SUBMITTED;
+                : PostStatus.PENDING;
 
         // Post 저장
         Post post = Post.builder()
