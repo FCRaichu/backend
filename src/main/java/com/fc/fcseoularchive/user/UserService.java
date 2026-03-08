@@ -7,8 +7,11 @@ import com.fc.fcseoularchive.entity.User;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.dto.LoginRequest;
 import com.fc.fcseoularchive.user.dto.LoginResponse;
+import com.fc.fcseoularchive.user.dto.RefreshReqeust;
 import com.fc.fcseoularchive.user.dto.UserCreateRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -85,7 +89,38 @@ public class UserService {
         return new LoginResponse(jwtToken, user);
     }
 
-    // 로그아웃
+    // 토큰 재발급 (리프레시)
+    public LoginResponse refresh(RefreshReqeust req) {
+
+        String refreshToken = req.getRefreshToken();
+
+        // 리프레시 토큰 검증 (오류발생 -> validateToken 에서 터짐() )
+        if(!jwtTokenProvider.validateRefreshToken(refreshToken)){
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "만료된 토큰 입니다.");
+        }
+
+        // 사용자 정보 꺼내기 (subject)
+        String userId = jwtTokenProvider.getUserNameFromToken(refreshToken);
+
+        // 리프레시 토큰 (Redis에서 삭제)
+        jwtTokenProvider.deleteRefreshToken(refreshToken);
+
+        // 유저 정보 db에서 조회
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+
+        // 새로운 인증서 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getUserId(),
+                null,
+                List.of(new SimpleGrantedAuthority(user.getRole().toString()))
+        );
+
+        // 토큰 재발급
+        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+
+        return new LoginResponse(jwtToken, user);
+    }
 
 
     /**

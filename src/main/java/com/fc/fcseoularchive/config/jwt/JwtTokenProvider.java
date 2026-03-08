@@ -1,8 +1,11 @@
 package com.fc.fcseoularchive.config.jwt;
 
+import ch.qos.logback.core.status.ErrorStatus;
 import com.fc.fcseoularchive.config.redis.RedisDao;
+import com.fc.fcseoularchive.error.ApiException;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import io.jsonwebtoken.security.Keys; // JJWT 라이브러리의 유틸리티 클래스임 (JWT서명용 key 객체 만들어줌)
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -30,6 +32,8 @@ public class JwtTokenProvider {
     private final RedisDao redisDao;
 
     private static final String GRANT_TYPE = "Bearer";
+
+    private static final String TOKEN_PREFIX = "RefreshToken:"; // 토큰 태그 달아주기
 
     @Value("${jwt.access-token.expire-time}") // 1시간으로 설정
     private long ACCESS_TOKEN_EXPIRE_TIME;
@@ -71,7 +75,7 @@ public class JwtTokenProvider {
 
         // Redis에 RefreshToken 넣기
         // "REFRESH_TOKEN_EXPIRE_TIME"만큼 시간이 지나면 삭제됨
-        redisDao.setValues(username, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
+        redisDao.setValues(TOKEN_PREFIX + username, refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
 
         return JwtToken.builder().grantType(GRANT_TYPE) // "Bearer" 임!
                 .accessToken(accessToken).refreshToken(refreshToken).build();
@@ -142,13 +146,13 @@ public class JwtTokenProvider {
 
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.info("유효하지 않은 JWT 토큰입니다.", e);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            log.info("만료된 JWT 토큰입니다.", e);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            log.info("지원하지 않는 JWT 토큰입니다.", e);
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty", e);
+            log.info("JWT 문자열이 비어 있거나 잘못되었습니다.", e);
         }
         return false;
     }
@@ -163,10 +167,11 @@ public class JwtTokenProvider {
             // token에서 username 추출하기
             String username = getUserNameFromToken(token);
             // Redis에 저장된 RefreshToken과 비교하기
-            String redisToken = (String) redisDao.getValues(username);
+            String redisToken = (String) redisDao.getValues(TOKEN_PREFIX + username);
+
             return token.equals(redisToken);
         } catch (Exception e) {
-            log.info("RefreshToken Validation Failed", e);
+            log.info("리프레시 토큰 검증에 실패했습니다.", e);
             return false;
         }
     }
@@ -192,11 +197,11 @@ public class JwtTokenProvider {
     // RefreshToken 삭제
     public void deleteRefreshToken(String username) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "500", "INTERNAL_SERVER_ERROR", "리프레시 토큰 삭제를 위한 username이 비어 있습니다.");
         }
 
         // 로그아웃 시 Redis에서 RefreshToken 삭제
-        redisDao.deleteValues(username);
+        redisDao.deleteValues(TOKEN_PREFIX + username);
     }
 
 
