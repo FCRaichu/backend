@@ -62,7 +62,9 @@ public class SecurityConfig {
                                         "/v3/api-docs/**", // Swagger
                                         "/error/**", // Error Test
                                         "/api/users/join",
-                                        "/api/users",
+                                        "/api/users/login",
+                                        "/api/users/refresh",
+
 
                                         /** 일단.. 불편해서 다 열어주고 개발 운영 시 꼭 지정해주기 ! */
                                         "/**"
@@ -73,10 +75,9 @@ public class SecurityConfig {
                                 // ex) .requestMatchers(HttpMethod.POST, "/api/users/join").permitAll()
 
 
-
                                 /** 관리자만 가능한 곳! */
 //                                .requestMatchers(
-//                                        "/admin/**"
+//                                        "/api/admin/**"
 //                                ).hasRole("ADMIN")
 
                                 /** 위에 없으면 로그인된 회원만 가능! */

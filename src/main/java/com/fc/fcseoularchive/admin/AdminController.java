@@ -17,7 +17,7 @@ import java.util.List;
 @Tag(name = "0. AdminController")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final UserService userService;

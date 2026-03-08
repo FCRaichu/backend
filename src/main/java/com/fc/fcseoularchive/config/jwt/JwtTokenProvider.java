@@ -107,18 +107,20 @@ public class JwtTokenProvider {
         // JWT 토큰 복호화
         Claims claims = parseClaims(accessToken);
         if (claims.get("role") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED,"401","UNAUTHORIZED","권한 정보가 없는 토큰입니다.");
         }
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("role").toString().split(","))
-                .map(SimpleGrantedAuthority::new) // SimpleGrantedAuthority 객체들의 컬렉션으로 변환
+//                .map(SimpleGrantedAuthority::new) // SimpleGrantedAuthority 객체들의 컬렉션으로 변환
+                .map( s -> new SimpleGrantedAuthority("ROLE_"+s))
                 .toList();
 
         // UserDetails 객체를 만들어서 Authentication return
         // UserDetails: interface, User: UserDetails를 구현한 클래스
         UserDetails principal = new User(claims.getSubject(), "", authorities); // 파라미터: 사용자 식별자, credentials, 권한 목록
         return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
 
     }
 

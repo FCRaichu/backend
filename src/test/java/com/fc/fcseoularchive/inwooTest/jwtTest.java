@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -298,16 +299,16 @@ public class jwtTest {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NTk1NzR9.IJGecob31QczxnueNrjEWjGICPbxJmZ1eo_S_NzKtQ8";
 
 
-        Assertions.assertEquals(true,jwtTokenProvider.validateRefreshToken(token));
+        Assertions.assertEquals(true, jwtTokenProvider.validateRefreshToken(token));
 
 
     }
-    
+
     @Test
     @DisplayName("redis 에 저장된 토큰 분해 테트")
-    public void test12() throws Exception{
-        
-        String token ="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NTk1NzR9.IJGecob31QczxnueNrjEWjGICPbxJmZ1eo_S_NzKtQ8";
+    public void test12() throws Exception {
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NTk1NzR9.IJGecob31QczxnueNrjEWjGICPbxJmZ1eo_S_NzKtQ8";
 
         String secretKey = "CD9KEjLo1DkQB6EMWo8RZPl2i8XAxv4RLVNAC3dmdVf";
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
@@ -322,13 +323,13 @@ public class jwtTest {
 
     @Test
     @DisplayName("refreshToken 에서 반환 null 로 되는 오류 테스트")
-    public void test13() throws Exception{
+    public void test13() throws Exception {
 
 
         String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NjIwMjl9.zZdSTYEYHKJ2i8EXJ-F-6dw3u5IYu0EhkB86okOiUrM";
 
         // 리프레시 토큰 검증 (오류발생 -> validateToken 에서 터짐() )
-        if(!jwtTokenProvider.validateRefreshToken(refreshToken)){
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "만료된 토큰 입니다.");
         }
 
@@ -358,6 +359,84 @@ public class jwtTest {
 
     }
 
+    @Test
+    @DisplayName("토큰 복호화 해서 유저 role 꺼내보기")
+    public void test14() throws Exception {
+
+        String secretKey = "CD9KEjLo1DkQB6EMWo8RZPl2i8XAxv4RLVNAC3dmdVf";
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsnbjsmrAiLCJyb2xlIjoiQURNSU4iLCJleHAiOjE3NzI5NjIyODJ9.RUaVg0iicE9IrKIn5SI-DK_xyuBdiaGttcMGWcarF90";
+
+        Claims payload = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        String role = payload.get("role", String.class);
+        System.out.println("role = " + role);
+
+
+    }
+
+    @Test
+    @DisplayName("관리자 토큰 검증 테스트")
+    public void test15() throws Exception {
+
+        String secretKey = "CD9KEjLo1DkQB6EMWo8RZPl2i8XAxv4RLVNAC3dmdVf";
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsnbjsmrAiLCJyb2xlIjoiQURNSU4iLCJleHAiOjE3NzI5NjMxNjV9.4fGf8Bg7LfwD6bxzWV1N2BbuM_f_95CDVaUB3YpuGGs";
+
+        Claims payload = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        String role = payload.get("role", String.class);
+
+        Assertions.assertEquals("ADMIN", role);
+    }
+    
+    @Test
+    @DisplayName("토큰을 통해 인증 정보 만드는 곳 테스트")
+    public void test16() throws Exception{
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsnbjsmrAiLCJyb2xlIjoiQURNSU4iLCJleHAiOjE3NzI5NjMxNjV9.4fGf8Bg7LfwD6bxzWV1N2BbuM_f_95CDVaUB3YpuGGs";
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+        List<String> list = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        Assertions.assertTrue(list.contains("ADMIN"));
+
+    }
+    
+    @Test
+    @DisplayName("SecurityContext 확인해보기")
+    public void test17() throws Exception{
+
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsnbjsmrAiLCJyb2xlIjoiQURNSU4iLCJleHAiOjE3NzI5NjMxNjV9.4fGf8Bg7LfwD6bxzWV1N2BbuM_f_95CDVaUB3YpuGGs";
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Authentication securityAuthentication = SecurityContextHolder.getContext().getAuthentication();
+
+        List<String> list = securityAuthentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        Assertions.assertTrue(list.contains("ADMIN"));
+
+    }
        
 
 
