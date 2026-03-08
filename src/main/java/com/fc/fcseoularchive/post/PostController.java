@@ -17,6 +17,8 @@ public class PostController {
         개발 단계에서 token 은 `Bearer: 1` 과 같은 형태로 user 테이블의 id 만 넣는다
         todo token 적용할 때 token 에서 id 만 추출하는 과정 필요 (혹은 userId: String)
     */
+
+    // 직관 기록 작성
     @PostMapping
     public ResponseEntity<Void> createPost(
             @RequestHeader("Dev-Authorization") String token, // Authorization 으로 사용시 Swagger 에서 인식 못함. 임시로 Dev- 앞에 붙임

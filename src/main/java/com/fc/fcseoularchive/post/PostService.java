@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +61,14 @@ public class PostService {
             ).toList();
             imageRepository.saveAll(images);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostAdminResponse> getPostsByStatus(PostStatus status) {
+        return postRepository.findAllByStatus(status)
+                .stream()
+                .map(PostAdminResponse::from)
+                .collect(Collectors.toList());
     }
 
 
