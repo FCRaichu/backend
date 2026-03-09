@@ -3,8 +3,6 @@ package com.fc.fcseoularchive.post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,15 +21,22 @@ public class PostController {
     // 직관 기록 작성
     @PostMapping
     public ResponseEntity<Void> createPost(
-            @RequestBody PostCreateRequest request // 임시로 userId 필드 추가
+            @RequestBody PostCreateRequest request
     ) {
 
         try {
-            //Long id = Long.parseLong(userIdByString);
+            // userId null 체크
+            if (request.getUserId() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
             postService.createPost(request.getUserId(), request);
         } catch (NumberFormatException e) {
             // id 가 숫자가 아닌 예외 처리
             return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

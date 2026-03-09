@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// todo admin 관련은 admin 패키지에 작성 : merge 할 때 분리
+/* todo status, ticket_image 테이블 분리했으니 admin의 기능도 수정 필요 */
+
+
 // Auth 관련 parameter 는 제외하고 작성
 
 @RestController
@@ -28,38 +30,38 @@ public class PostAdminController {
 
 
     // 직관 인증 수락 - 200 ok
-    @PostMapping("/posts/{verificationId}/approve")
+    @PostMapping("/posts/{postAuthId}/approve")
     public ResponseEntity<Void> approvePost(
-            @PathVariable Long verificationId
+            @PathVariable Long postAuthId
     ) {
-        postService.ApprovePost(verificationId);
+        postService.ApprovePost(postAuthId);
         return ResponseEntity.ok().build();
     }
 
     // 직관 인증 거절 - 204 No Content
-    @PostMapping("/posts/{verificationId}/reject")
+    @PostMapping("/posts/{postAuthId}/reject")
     public ResponseEntity<Void> rejectPost(
-            @PathVariable Long verificationId
+            @PathVariable Long postAuthId
     ) {
-        postService.RejectPost(verificationId);
+        postService.RejectPost(postAuthId);
         return ResponseEntity.noContent().build();
     }
 
     // 직관 인증 게시물 pending 으로 되돌리기 - 개발자용
-    @PostMapping("/posts/{verificationId}/pending")
+    @PostMapping("/posts/{postAuthId}/pending")
     public ResponseEntity<Void> resetPostToPending(
-            @PathVariable Long verificationId
+            @PathVariable Long postAuthId
     ) {
-        postService.resetPostToPending(verificationId);
+        postService.resetPostToPending(postAuthId);
         return ResponseEntity.ok().build();
     }
 
     // 직관 인증 게시물 draft 로 되돌리기 - 개발자용
-    @PostMapping("/posts/{verificationId}/draft")
+    @PostMapping("/posts/{postAuthId}/draft")
     public ResponseEntity<Void> resetPostToDraft(
-            @PathVariable Long verificationId
+            @PathVariable Long postAuthId
     ) {
-        postService.resetPostToDraft(verificationId);
+        postService.resetPostToDraft(postAuthId);
         return ResponseEntity.ok().build();
     }
 
