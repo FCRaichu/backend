@@ -1,5 +1,6 @@
-package com.fc.fcseoularchive.entity;
+package com.fc.fcseoularchive.domain.entity;
 
+import com.fc.fcseoularchive.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,13 +12,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(
-        name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_users_user_id", columnNames = "user_id"),
-                @UniqueConstraint(name = "uk_users_nickname", columnNames = "nickname")
-        }
-)
+@Table(name = "users")
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // PROTECTED : 외부에서 new User() 막기
 public class User {
 
@@ -25,14 +21,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, length = 50)
+    @Column(name = "user_id", nullable = false, length = 50, unique = true)
     private String userId;
 
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30, unique = true)
     private String nickname;
+
+    @OneToOne(mappedBy = "user")
+    private Seasonauth seasonauth;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -43,9 +42,6 @@ public class User {
 
     @Column(name = "profile_image", length = 512)
     private String profileImage;
-
-    @Column(name = "season_ticket")
-    private LocalDateTime seasonTicket;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
@@ -65,9 +61,9 @@ public class User {
         this.password = password;
         this.nickname = nickname;
         this.role = Role.USER;
+        this.seasonauth = null;
         this.points = 0;
         this.profileImage = null;
-        this.seasonTicket = null;
         this.lastLogin = null;
         this.deletedAt = null;
     }

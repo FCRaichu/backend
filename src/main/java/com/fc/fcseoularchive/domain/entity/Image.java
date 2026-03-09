@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.entity;
+package com.fc.fcseoularchive.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

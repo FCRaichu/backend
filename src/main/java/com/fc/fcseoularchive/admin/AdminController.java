@@ -1,6 +1,6 @@
 package com.fc.fcseoularchive.admin;
 
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.user.dto.UserResponse;
 import com.fc.fcseoularchive.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;

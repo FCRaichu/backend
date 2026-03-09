@@ -1,6 +1,6 @@
 package com.fc.fcseoularchive.post;
 
-import com.fc.fcseoularchive.entity.PostStatus;
+import com.fc.fcseoularchive.domain.enums.PostStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class PostAdminController {
     private final PostService postService;
 
     // 모든 status 에 대해 param 으로 조회
-    @GetMapping("/posts")
+    @GetMapping("/verifications/posts")
     public ResponseEntity<List<PostAdminResponse>> getPostsByStatus(
             @RequestParam(name = "status")PostStatus status
     ) {

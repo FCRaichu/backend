@@ -1,7 +1,7 @@
 package com.fc.fcseoularchive.user;
 
 
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,6 @@
 package com.fc.fcseoularchive.game;
 
-import com.fc.fcseoularchive.entity.Game;
-import com.fc.fcseoularchive.entity.GameResult;
+import com.fc.fcseoularchive.domain.entity.Game;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,10 +1,9 @@
 package com.fc.fcseoularchive.user.dto;
 
-import com.fc.fcseoularchive.entity.Role;
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
+import com.fc.fcseoularchive.domain.enums.Role;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

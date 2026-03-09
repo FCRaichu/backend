@@ -21,19 +21,19 @@ public class PostController {
     */
 
     // 직관 기록 작성
-    @PostMapping
-    public ResponseEntity<Void> createPost(
-            @RequestBody PostCreateRequest request // 임시로 userId 필드 추가
-    ) {
-
-        try {
-            //Long id = Long.parseLong(userIdByString);
-            postService.createPost(request.getUserId(), request);
-        } catch (NumberFormatException e) {
-            // id 가 숫자가 아닌 예외 처리
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+//    @PostMapping
+//    public ResponseEntity<Void> createPost(
+//            @RequestBody PostCreateRequest request // 임시로 userId 필드 추가
+//    ) {
+//
+//        try {
+//            //Long id = Long.parseLong(userIdByString);
+//            postService.createPost(request.getUserId(), request);
+//        } catch (NumberFormatException e) {
+//            // id 가 숫자가 아닌 예외 처리
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
 }

@@ -3,13 +3,12 @@ package com.fc.fcseoularchive.user;
 
 import com.fc.fcseoularchive.config.jwt.JwtToken;
 import com.fc.fcseoularchive.config.jwt.JwtTokenProvider;
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.dto.LoginRequest;
 import com.fc.fcseoularchive.user.dto.LoginResponse;
 import com.fc.fcseoularchive.user.dto.RefreshReqeust;
 import com.fc.fcseoularchive.user.dto.UserCreateRequest;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,12 +17,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -31,6 +32,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     // 회원 가입
+    @Transactional
     public void createUser(UserCreateRequest req) {
         // 유저 아이디 중복 검사
         if (userRepository.findByUserId(req.getUserId()).isPresent()) {
