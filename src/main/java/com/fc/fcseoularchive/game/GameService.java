@@ -1,12 +1,12 @@
 package com.fc.fcseoularchive.game;
 
 import com.fc.fcseoularchive.entity.Game;
-import com.fc.fcseoularchive.entity.GameResult;
+import com.fc.fcseoularchive.error.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,4 +46,35 @@ public class GameService {
             return response;
         }).collect(Collectors.toList());
     }
+
+    // admin : 경기 추가
+    @Transactional
+    public void addGame(GameAdminRequest request) {
+        Game game = Game.builder()
+                .date(request.getDate())
+                .stadium(request.getStadium())
+                .round(request.getRound())
+                .homeTeam(request.getHomeTeam())
+                .awayTeam(request.getAwayTeam())
+                .homeScore(request.getHomeScore())
+                .awayScore(request.getAwayScore())
+                .result(request.getResult())
+                .deletedAt(request.getDeletedAt())
+                .build();
+
+        // created_at, updated_at 은 onCreated 로 자동 적용
+        gameRepository.save(game);
+    }
+
+    // admin : 경기 정보 1개 가져 오기
+    public Game getGame(Long gameId) {
+        return gameRepository.findById(gameId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
+
+    }
+
+    // admin : 경기 1개 정보 수정
+
+
 }
+

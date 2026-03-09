@@ -1,7 +1,11 @@
 package com.fc.fcseoularchive.admin;
 
+import com.fc.fcseoularchive.entity.Game;
 import com.fc.fcseoularchive.entity.PostStatus;
 import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.game.GameAdminRequest;
+import com.fc.fcseoularchive.game.GameRepository;
+import com.fc.fcseoularchive.game.GameService;
 import com.fc.fcseoularchive.post.PostAdminResponse;
 import com.fc.fcseoularchive.post.PostService;
 import com.fc.fcseoularchive.user.dto.UserResponse;
@@ -9,6 +13,8 @@ import com.fc.fcseoularchive.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springdoc.webmvc.core.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +29,8 @@ public class AdminController {
 
     private final UserService userService;
     private final PostService postService;
+    private final GameService gameService;
+    private final RequestService requestBuilder;
 
     @Operation(summary = "관리자용 회원 전체 조회")
     @GetMapping("/users")
@@ -89,5 +97,30 @@ public class AdminController {
         postService.resetPostToDraft(postAuthId);
         return ResponseEntity.ok().build();
     }
+
+    // 경기 정보 추가
+    @PostMapping("/game")
+    public ResponseEntity<Void> addGame(@RequestBody GameAdminRequest request) {
+        gameService.addGame(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // 경기 정보 가져 오기
+    @GetMapping("/game/{gameId}")
+    public ResponseEntity<Game> getGame (@PathVariable Long gameId) {
+        Game game = gameService.getGame(gameId);
+        return ResponseEntity.status(HttpStatus.OK).body(game);
+    }
+
+    // 경기 정보 수정 하기
+    /*@PutMapping("/game/{gameId}")
+    public ResponseEntity<Game> getGame (
+            @PathVariable Long gameId,
+            @RequestBody GameAdminRequest request
+    ) {
+        Game game = gameService.updateGame(gameId, request);
+        return ResponseEntity.status(HttpStatus.OK).body(game);
+
+    }*/
 
 }
