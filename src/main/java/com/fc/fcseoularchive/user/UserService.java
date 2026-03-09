@@ -5,6 +5,7 @@ import com.fc.fcseoularchive.config.jwt.JwtToken;
 import com.fc.fcseoularchive.config.jwt.JwtTokenProvider;
 import com.fc.fcseoularchive.domain.entity.Seasonauth;
 import com.fc.fcseoularchive.domain.entity.User;
+import com.fc.fcseoularchive.domain.enums.SeasonStatus;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -96,7 +97,7 @@ public class UserService {
         String refreshToken = req.getRefreshToken();
 
         // 리프레시 토큰 검증 (오류발생 -> validateToken 에서 터짐() )
-        if(!jwtTokenProvider.validateRefreshToken(refreshToken)){
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "만료된 토큰 입니다.");
         }
 
@@ -129,13 +130,23 @@ public class UserService {
      */
     // 관리자용 전체 회원 조회
     public List<UserResponse> getAll() {
-        List<Seasonauth> userAll = userRepository.getUserAll();
-
-        return userAll.stream()
-                .map( seasonauth -> new UserResponse(seasonauth))
+        return userRepository.getUserAll().stream()
+                .map(user -> {
+                    Seasonauth seasonauth = user.getSeasonauth();
+                    Integer seasonticket = null;
+                    if (seasonauth.getSeasonStatus() == SeasonStatus.APPROVED) {
+                        seasonticket = seasonauth.getCreatedAt().getYear();
+                    }
+                    return new UserResponse(
+                            user.getId(),
+                            user.getUserId(),
+                            user.getNickname(),
+                            user.getRole(),
+                            user.getPoints(),
+                            seasonticket
+                    );
+                })
                 .toList();
-
-
     }
 
 

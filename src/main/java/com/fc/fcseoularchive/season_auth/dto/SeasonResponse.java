@@ -24,15 +24,7 @@ public class SeasonResponse {
 
     private SeasonStatus seasonStatus; // 상태 PENDING 만 나갈거긴 한데 혹시 모르니 같이 반환
 
-    private LocalDateTime createdAt;
-
-    public SeasonResponse(Long id, String nickname, String image, SeasonStatus seasonStatus, LocalDateTime createdAt) {
-        this.id = id;
-        this.nickname = nickname;
-        this.image = image;
-        this.seasonStatus = seasonStatus;
-        this.createdAt = createdAt;
-    }
+    private Integer createdAt;
 
     @QueryProjection
     public SeasonResponse(Seasonauth  seasonauth) {
@@ -40,7 +32,7 @@ public class SeasonResponse {
         this.nickname = seasonauth.getUser().getNickname();
         this.image = seasonauth.getImage();
         this.seasonStatus = seasonauth.getSeasonStatus();
-        this.createdAt = seasonauth.getCreatedAt();
+        this.createdAt = seasonauth.getCreatedAt().getYear();
     }
 
 

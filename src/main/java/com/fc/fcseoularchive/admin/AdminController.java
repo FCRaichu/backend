@@ -25,7 +25,6 @@ public class AdminController {
     @Operation(summary = "관리자용 회원 전체 조회")
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAll());
     }
 

@@ -25,25 +25,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "id로 유저 1명 조회")
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(userService.getUser(id)));
-    }
+//    @Operation(summary = "id로 유저 1명 조회")
+//    @GetMapping("/{id}")
+//    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+//        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(userService.getUser(id)));
+//    }
+//
+//    @Operation(summary = "유저 아이디로 1명 조회")
+//    @GetMapping("/user-id/{userId}")
+//    public ResponseEntity<UserResponse> getUserId(@PathVariable String userId) {
+//        User user = userService.getUserId(userId);
+//        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+//    }
 
-    @Operation(summary = "유저 아이디로 1명 조회")
-    @GetMapping("/user-id/{userId}")
-    public ResponseEntity<UserResponse> getUserId(@PathVariable String userId) {
-        User user = userService.getUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
-    }
-
-    @Operation(summary = "유저 닉네임으로 1명 조회")
-    @GetMapping("/nickname/{nickname}")
-    public ResponseEntity<UserResponse> getNickname(@PathVariable String nickname) {
-        User user = userService.getNickname(nickname);
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
-    }
+//    @Operation(summary = "유저 닉네임으로 1명 조회")
+//    @GetMapping("/nickname/{nickname}")
+//    public ResponseEntity<UserResponse> getNickname(@PathVariable String nickname) {
+//        User user = userService.getNickname(nickname);
+//        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+//    }
 
     @Operation(summary = "로그인")
     @PostMapping("/login")

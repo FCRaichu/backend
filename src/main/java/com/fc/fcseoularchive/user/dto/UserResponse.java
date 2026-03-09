@@ -23,21 +23,13 @@ public class UserResponse {
     private Integer seasonTicket;
 
 
-    public UserResponse(User user) {
-        this.id = user.getId();
-        this.userId = user.getUserId();
-        this.nickname = user.getNickname();
-        this.role = user.getRole();
-        this.points = user.getPoints();
-        this.seasonTicket = LocalDateTime.now().getYear();
+    public UserResponse(Long id, String userId, String nickname, Role role, Integer points, Integer seasonTicket) {
+        this.id = id;
+        this.userId = userId;
+        this.nickname = nickname;
+        this.role = role;
+        this.points = points;
+        this.seasonTicket = seasonTicket;
     }
 
-    public UserResponse(Seasonauth seasonauth) {
-        this.id = seasonauth.getUser().getId();
-        this.userId = seasonauth.getUser().getUserId();
-        this.nickname = seasonauth.getUser().getNickname();
-        this.role = seasonauth.getUser().getRole();
-        this.points = seasonauth.getUser().getPoints();
-        this.seasonTicket = seasonauth.getCreatedAt().getYear();
-    }
 }
