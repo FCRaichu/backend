@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class SeasonResponse {
 
 
-    private Long id;
+    private Long seasonAuthId;
 
     private String nickname; // 닉네임
 
@@ -24,15 +24,15 @@ public class SeasonResponse {
 
     private SeasonStatus seasonStatus; // 상태 PENDING 만 나갈거긴 한데 혹시 모르니 같이 반환
 
-    private Integer createdAt;
+    private LocalDateTime createdAt;
 
     @QueryProjection
     public SeasonResponse(Seasonauth  seasonauth) {
-        this.id = seasonauth.getId();
+        this.seasonAuthId = seasonauth.getId();
         this.nickname = seasonauth.getUser().getNickname();
         this.image = seasonauth.getImage();
         this.seasonStatus = seasonauth.getSeasonStatus();
-        this.createdAt = seasonauth.getCreatedAt().getYear();
+        this.createdAt = seasonauth.getCreatedAt();
     }
 
 

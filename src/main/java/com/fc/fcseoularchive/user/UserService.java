@@ -30,7 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 회원 가입
+    /** 회원 가입 */
     @Transactional
     public void createUser(UserCreateRequest req) {
         // 유저 아이디 중복 검사
@@ -48,35 +48,18 @@ public class UserService {
         userRepository.save(user);
     }
 
-
-    // Id 로 회원 조회
-    public User getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
-    }
-
-    //  userId 로 회원 조회
-    public User getUserId(String userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
-        return null;
-    }
-
-    // 닉네임으로 회원 조회
-    public User getNickname(String nickname) {
-        return userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
-    }
-
-    // 로그인
+    /** 로그인 */
     public LoginResponse login(LoginRequest req) {
-        User user = userRepository.findByUserId(req.getUserId())
+        User user = userRepository.getUser(req.getUserId())
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "존재하지 않은 아이디입니다."));
 
         // 비밀번호가 틀렸을 경우
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "비밀번호를 다시 입력해주세요.");
         }
+
+        // 티켓 확인
+        Integer seasonTicket = validateUser(user);
 
         // 인증서 생성 타입은 Authentication
         // principal, credntials, authent~~list
@@ -88,10 +71,10 @@ public class UserService {
 
         // 토큰 생성 ( grantType, accessToken, RefreshToken )
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
-        return new LoginResponse(jwtToken, user);
+        return new LoginResponse(jwtToken, user, seasonTicket);
     }
 
-    // 토큰 재발급 (리프레시)
+    /** 토큰 재발급 (리프레시) */
     public LoginResponse refresh(RefreshReqeust req) {
 
         String refreshToken = req.getRefreshToken();
@@ -108,8 +91,8 @@ public class UserService {
         jwtTokenProvider.deleteRefreshToken(refreshToken);
 
         // 유저 정보 db에서 조회
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+        User user = userRepository.getUser(userId)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "존재하지 않은 아이디입니다."));
 
         // 새로운 인증서 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -118,36 +101,64 @@ public class UserService {
                 List.of(new SimpleGrantedAuthority(user.getRole().toString()))
         );
 
+        // 티켓 확인
+        Integer seasonTicket = validateUser(user);
+
         // 토큰 재발급
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        return new LoginResponse(jwtToken, user);
+        return new LoginResponse(jwtToken, user, seasonTicket);
+    }
+
+    /** Id로 회원 정보 조회 */
+    public UserResponse getUser(Long id) {
+        User user = userRepository.selectById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+        Integer seasonTicket = validateUser(user);
+        return new UserResponse(user, seasonTicket);
+    }
+
+    /**
+     * User 에서 시즌티켓 있는지 검증, 인증 된 경우만 해당 년도 가져옴
+     * 없거나, 인증 안되었으면 다 null
+     */
+    public Integer validateUser(User user) {
+        Integer seasonTicket = null;
+        Seasonauth seasonauth = user.getSeasonauth();
+        if (seasonauth != null) {
+            if (seasonauth.getSeasonStatus() == SeasonStatus.APPROVED) {
+                seasonTicket = seasonauth.getCreatedAt().getYear();
+            }
+        }
+        return seasonTicket;
     }
 
 
     /**
-     * 관리자용 AP
+     * 관리자용 API
      */
     // 관리자용 전체 회원 조회
     public List<UserResponse> getAll() {
         return userRepository.getUserAll().stream()
                 .map(user -> {
-                    Seasonauth seasonauth = user.getSeasonauth();
-                    Integer seasonticket = null;
-                    if (seasonauth.getSeasonStatus() == SeasonStatus.APPROVED) {
-                        seasonticket = seasonauth.getCreatedAt().getYear();
-                    }
-                    return new UserResponse(
-                            user.getId(),
-                            user.getUserId(),
-                            user.getNickname(),
-                            user.getRole(),
-                            user.getPoints(),
-                            seasonticket
-                    );
+                    Integer seasonTicket = validateUser(user);
+                    return new UserResponse(user, seasonTicket);
                 })
                 .toList();
     }
 
+    /** 쓸모없을 것 같음 */
+//    //  userId 로 회원 조회
+//    public User getUserId(String userId) {
+//        User user = userRepository.findByUserId(userId)
+//                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+//        return null;
+//    }
+//
+//    // 닉네임으로 회원 조회
+//    public User getNickname(String nickname) {
+//        return userRepository.findByNickname(nickname)
+//                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+//    }
 
 }

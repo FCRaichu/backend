@@ -1,35 +1,34 @@
 package com.fc.fcseoularchive.user.dto;
 
-import com.fc.fcseoularchive.domain.entity.Seasonauth;
 import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.domain.enums.Role;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 public class UserResponse {
 
-    private Long id;
+    private final Long id;
 
-    private String userId;
+    private final String userId;
 
-    private String nickname;
+    private final String nickname;
 
-    private Role role;
+    private final Role role;
 
-    private Integer points;
+    private final Integer points;
 
-    private Integer seasonTicket;
+    private final Integer seasonAuth;
 
 
-    public UserResponse(Long id, String userId, String nickname, Role role, Integer points, Integer seasonTicket) {
-        this.id = id;
-        this.userId = userId;
-        this.nickname = nickname;
-        this.role = role;
-        this.points = points;
-        this.seasonTicket = seasonTicket;
+    public UserResponse(User user, Integer seasonAuth) {
+        this.id = user.getId();
+        this.userId = user.getUserId();
+        this.nickname = user.getNickname();
+        this.role = user.getRole();
+        this.points = user.getPoints();
+        this.seasonAuth = seasonAuth;
     }
+
+
 
 }

@@ -81,5 +81,16 @@ public class SeasonauthService {
         seasonauth.reject();
     }
 
+    // 관리자 모두 승인
+    @Transactional
+    public void approveAll(){
+        List<Seasonauth> seasonList = seasonauthRepository.getSeasonList();
+        // 순회 하면서 모두 승인 해주기
+        for (Seasonauth seasonauth : seasonList) {
+            seasonauth.approve();
+        }
+    }
+
+
 
 }
