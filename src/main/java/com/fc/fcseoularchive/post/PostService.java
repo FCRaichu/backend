@@ -1,7 +1,8 @@
 package com.fc.fcseoularchive.post;
 
+import com.fc.fcseoularchive.domain.entity.*;
+import com.fc.fcseoularchive.domain.enums.PostStatus;
 import com.fc.fcseoularchive.image.ImageRepository;
-import com.fc.fcseoularchive.entity.*;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.game.GameRepository;
 import com.fc.fcseoularchive.user.UserRepository;
@@ -33,7 +34,7 @@ public class PostService {
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
 
         // 시즌권 사용 여부에 따라 Post 의 상태 정의
-        PostStatus status = (user.getSeasonTicket() != null)
+        PostStatus status = (user.getSeasonauth() != null)
                 ? PostStatus.APPROVED // 시즌권 유저는 바로 APPROVED
                 : PostStatus.PENDING;
 

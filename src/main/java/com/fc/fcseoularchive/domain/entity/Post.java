@@ -1,6 +1,7 @@
-package com.fc.fcseoularchive.entity;
+package com.fc.fcseoularchive.domain.entity;
 
 
+import com.fc.fcseoularchive.domain.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

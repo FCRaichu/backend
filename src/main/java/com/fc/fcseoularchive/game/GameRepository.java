@@ -1,6 +1,6 @@
 package com.fc.fcseoularchive.game;
 
-import com.fc.fcseoularchive.entity.Game;
+import com.fc.fcseoularchive.domain.entity.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.entity;
+package com.fc.fcseoularchive.domain.enums;
 
 public enum GameResult {
     W, // win

@@ -1,7 +1,6 @@
 package com.fc.fcseoularchive.game;
 
-import com.fc.fcseoularchive.entity.GameResult;
-import jakarta.persistence.*;
+import com.fc.fcseoularchive.domain.enums.GameResult;
 import lombok.Getter;
 import lombok.Setter;
 

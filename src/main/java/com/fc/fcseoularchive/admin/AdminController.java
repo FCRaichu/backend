@@ -1,19 +1,18 @@
 package com.fc.fcseoularchive.admin;
 
-import com.fc.fcseoularchive.entity.Game;
-import com.fc.fcseoularchive.entity.PostStatus;
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.Game;
+import com.fc.fcseoularchive.domain.enums.PostStatus;
 import com.fc.fcseoularchive.game.GameAdminRequest;
-import com.fc.fcseoularchive.game.GameRepository;
 import com.fc.fcseoularchive.game.GameService;
 import com.fc.fcseoularchive.post.PostAdminResponse;
 import com.fc.fcseoularchive.post.PostService;
+import com.fc.fcseoularchive.season_auth.SeasonauthService;
+import com.fc.fcseoularchive.season_auth.dto.SeasonResponse;
 import com.fc.fcseoularchive.user.dto.UserResponse;
 import com.fc.fcseoularchive.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springdoc.webmvc.core.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +27,45 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final SeasonauthService seasonauthService;
     private final PostService postService;
     private final GameService gameService;
     private final RequestService requestBuilder;
 
-    @Operation(summary = "관리자용 회원 전체 조회")
+    @Operation(summary = "회원 전체 조회")
     @GetMapping("/users")
-    public ResponseEntity<List<UserResponse>> getAllUsers(){
-        List<User> all = userService.getAll();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAll());
+    }
 
-        List<UserResponse> list = all.stream()
-                .map(user -> new UserResponse(user))
-                .toList();
+    @Operation(summary = "시즌권 전체 수락 (PENDING->APPROVED)")
+    @PostMapping("/season-auth/approveAll")
+    public ResponseEntity<Void> seasonApproveAll(){
+        seasonauthService.approveAll();
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(list);
+
+    @Operation(summary = "시즌권 대기 전체 조회")
+    @GetMapping("/season-auth/pending")
+    public ResponseEntity<List<SeasonResponse>> seasonGetAll(){
+        return ResponseEntity.status(HttpStatus.OK).body(seasonauthService.getAll());
+    }
+
+
+    @Operation(summary = "시즌권 수락 단건")
+    @PostMapping("/season-auth/approved/{seasonAuthId}")
+    public ResponseEntity<Void> seasonApprove(@PathVariable Long seasonAuthId){
+        seasonauthService.approve(seasonAuthId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    @Operation(summary = "시즌권 거절 단건")
+    @PostMapping("/season-auth/rejected/{seasonAuthId}")
+    public ResponseEntity<Void> seasonReject(@PathVariable Long seasonAuthId){
+        seasonauthService.rejected(seasonAuthId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
@@ -108,7 +132,7 @@ public class AdminController {
     // PENDING 게시물 전부 APPROVE 로 수락
     @Operation(summary = "PENDING 인 모든 게시글 APPROVED 로 변경")
     @PostMapping("/verifications/posts/all/approve")
-    public ResponseEntity<Void> approveAll() {
+    public ResponseEntity<Void> postApproveAll() {
         postService.approveAll();
         return ResponseEntity.ok().build();
     }

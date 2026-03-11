@@ -1,17 +1,14 @@
 package com.fc.fcseoularchive.user;
 
 
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.user.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "1. UserController")
 @RestController
@@ -31,21 +28,7 @@ public class UserController {
     @Operation(summary = "id로 유저 1명 조회")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(userService.getUser(id)));
-    }
-
-    @Operation(summary = "유저 아이디로 1명 조회")
-    @GetMapping("/user-id/{userId}")
-    public ResponseEntity<UserResponse> getUserId(@PathVariable String userId) {
-        User user = userService.getUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
-    }
-
-    @Operation(summary = "유저 닉네임으로 1명 조회")
-    @GetMapping("/nickname/{nickname}")
-    public ResponseEntity<UserResponse> getNickname(@PathVariable String nickname) {
-        User user = userService.getNickname(nickname);
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
     }
 
     @Operation(summary = "로그인")
@@ -60,6 +43,20 @@ public class UserController {
     public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshReqeust req){
         return ResponseEntity.status(HttpStatus.OK).body(userService.refresh(req));
     }
+
+    //    @Operation(summary = "유저 아이디로 1명 조회")
+//    @GetMapping("/user-id")
+//    public ResponseEntity<UserResponse> getUserId(@RequestParam String userId) {
+//        User user = userService.getUserId(userId);
+//        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+//    }
+//
+//    @Operation(summary = "유저 닉네임으로 1명 조회")
+//    @GetMapping("/nickname")
+//    public ResponseEntity<UserResponse> getNickname(@RequestParam String nickname) {
+//        User user = userService.getNickname(nickname);
+//        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+//    }
 
     /**
      * 로그아웃은 별도 API 로 만들지 않는다.

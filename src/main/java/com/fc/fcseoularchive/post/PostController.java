@@ -1,6 +1,5 @@
 package com.fc.fcseoularchive.post;
 
-import com.fc.fcseoularchive.entity.Post;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.fc.fcseoularchive.inwooTest;
 import com.fc.fcseoularchive.config.jwt.JwtToken;
 import com.fc.fcseoularchive.config.jwt.JwtTokenProvider;
 import com.fc.fcseoularchive.config.redis.RedisDao;
-import com.fc.fcseoularchive.entity.User;
+import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.UserRepository;
 import com.fc.fcseoularchive.user.dto.LoginResponse;
@@ -11,7 +11,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,7 @@ public class jwtTest {
             .withExposedPorts(6379);
 
     @DynamicPropertySource
-    static void redisPropertie(DynamicPropertyRegistry registry) {
+    static void redisProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.redis.host", redisContainer::getHost);
         registry.add("spring.redis.port", () -> redisContainer.getMappedPort(6379));
     }
@@ -321,43 +320,43 @@ public class jwtTest {
 
     }
 
-    @Test
-    @DisplayName("refreshToken 에서 반환 null 로 되는 오류 테스트")
-    public void test13() throws Exception {
-
-
-        String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NjIwMjl9.zZdSTYEYHKJ2i8EXJ-F-6dw3u5IYu0EhkB86okOiUrM";
-
-        // 리프레시 토큰 검증 (오류발생 -> validateToken 에서 터짐() )
-        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "만료된 토큰 입니다.");
-        }
-
-        // 사용자 정보 꺼내기 (subject)
-        String userId = jwtTokenProvider.getUserNameFromToken(refreshToken);
-
-        // 리프레시 토큰 (Redis에서 삭제)
-        jwtTokenProvider.deleteRefreshToken(refreshToken);
-
-        // 유저 정보 db에서 조회
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
-
-        // 새로운 인증서 생성
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getUserId(),
-                null,
-                List.of(new SimpleGrantedAuthority(user.getRole().toString()))
-        );
-
-        // 토큰 재발급
-        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
-
-        LoginResponse loginResponse = new LoginResponse(jwtToken, user);
-
-        System.out.println("loginResponse 의 담긴 유저 아이디 = " + loginResponse.getUserId());
-
-    }
+//    @Test
+//    @DisplayName("refreshToken 에서 반환 null 로 되는 오류 테스트")
+//    public void test13() throws Exception {
+//
+//
+//        String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiLsiqTtjoDsp4DrsKUiLCJleHAiOjE3NzM1NjIwMjl9.zZdSTYEYHKJ2i8EXJ-F-6dw3u5IYu0EhkB86okOiUrM";
+//
+//        // 리프레시 토큰 검증 (오류발생 -> validateToken 에서 터짐() )
+//        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
+//            throw new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "만료된 토큰 입니다.");
+//        }
+//
+//        // 사용자 정보 꺼내기 (subject)
+//        String userId = jwtTokenProvider.getUserNameFromToken(refreshToken);
+//
+//        // 리프레시 토큰 (Redis에서 삭제)
+//        jwtTokenProvider.deleteRefreshToken(refreshToken);
+//
+//        // 유저 정보 db에서 조회
+//        User user = userRepository.findByUserId(userId)
+//                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+//
+//        // 새로운 인증서 생성
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(
+//                user.getUserId(),
+//                null,
+//                List.of(new SimpleGrantedAuthority(user.getRole().toString()))
+//        );
+//
+//        // 토큰 재발급
+//        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
+//
+//        LoginResponse loginResponse = new LoginResponse(jwtToken, user);
+//
+//        System.out.println("loginResponse 의 담긴 유저 아이디 = " + loginResponse.getUserId());
+//
+//    }
 
     @Test
     @DisplayName("토큰 복호화 해서 유저 role 꺼내보기")

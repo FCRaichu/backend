@@ -1,7 +1,7 @@
 package com.fc.fcseoularchive.game;
-
-import com.fc.fcseoularchive.entity.Game;
 import com.fc.fcseoularchive.error.ApiException;
+import com.fc.fcseoularchive.domain.entity.Game;
+import com.fc.fcseoularchive.domain.enums.GameResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

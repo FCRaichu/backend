@@ -1,7 +1,9 @@
 package com.fc.fcseoularchive.post;
 
-import com.fc.fcseoularchive.entity.PostAuth;
-import com.fc.fcseoularchive.entity.PostStatus;
+
+import com.fc.fcseoularchive.domain.entity.PostAuth;
+import com.fc.fcseoularchive.domain.enums.PostStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 
