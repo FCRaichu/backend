@@ -64,7 +64,7 @@ public class UserService {
         // 인증서 생성 타입은 Authentication
         // principal, credntials, authent~~list
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getUserId(),
+                user.getId(),
                 null,
                 List.of(new SimpleGrantedAuthority(user.getRole().toString()))
         );
