@@ -3,12 +3,15 @@ import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.domain.entity.Game;
 import com.fc.fcseoularchive.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +63,13 @@ public class GameService {
         }).collect(Collectors.toList());
     }
 
+    /*@Value("3600000") // 1시간
+    private long GAMES_FOR_GUEST_EXPIRE_TIME;
+
+     redisDao.setValues(TOKEN_PREFIX + username, refreshToken, Duration.ofMillis(GAMES_FOR_GUEST_EXPIRE_TIME));*/
+
+    // Guest 용 경기 정보 조회 (캐시 적용 - 1시간 TTL)
+    @Cacheable(value = "guestGames", key = "'games'")
     public List<GameResponse> getAllGamesForGuest () {
         List<Game> games = gameRepository.findAllByOrderByDateAsc();
 
@@ -148,11 +158,9 @@ public class GameService {
         gameRepository.deleteById(gameId);
     }
 
-    /*public List<GameResponse> getAllGamesByYear(int year) {
+  /*  public List<GameResponse> getAllGamesByYear(int year) {
 
-        *//*
-           date 의 YYYY 가 year 와 동일한 game 만 list 에 담기
-        *//*
+       *//* games 중 *//*
 
 
     }*/
