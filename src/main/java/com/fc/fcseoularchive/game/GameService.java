@@ -4,6 +4,8 @@ import com.fc.fcseoularchive.domain.entity.Game;
 import com.fc.fcseoularchive.domain.enums.GameResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,11 @@ public class GameService {
     public List<GameResponse> getAllGames() {
         List<Game> games = gameRepository.findAllByOrderByDateAsc();
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userIdByString = authentication.getName();
+        Long loginId = Long.parseLong(userIdByString); // 로그인 유저의 id
+
+
         return games.stream().map(game -> {
             GameResponse response = new GameResponse();
 
@@ -33,6 +40,9 @@ public class GameService {
             response.setStadium(game.getStadium());
             response.setHomeScore(game.getHomeScore());
             response.setAwayScore(game.getAwayScore());
+
+            // todo "isAttended" : true - 로그인 user 가 간 경기인지, PostAuth 제거하고 구현
+            response.setIsAttended(false);
 
             // 상대팀 찾기 : 홈팀이 "FC Seoul" 이 아니면 awayTeam 이 opponent
             String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
