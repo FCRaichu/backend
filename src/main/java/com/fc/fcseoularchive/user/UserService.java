@@ -48,6 +48,7 @@ public class UserService {
     }
 
     /** 로그인 */
+    @Transactional
     public LoginResponse login(LoginRequest req) {
         User user = userRepository.getUser(req.getUserId())
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "존재하지 않은 아이디입니다."));
