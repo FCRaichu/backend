@@ -34,9 +34,7 @@ public class PostService {
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
 
         // 시즌권 사용 여부에 따라 Post 의 상태 정의
-        PostStatus status = (user.getSeasonauth() != null)
-                ? PostStatus.APPROVED // 시즌권 유저는 바로 APPROVED
-                : PostStatus.PENDING;
+        PostStatus status = PostStatus.APPROVED; // 임시, 변경 필요
 
         // Post 저장
         Post post = Post.builder()
