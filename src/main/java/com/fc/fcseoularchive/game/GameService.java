@@ -3,7 +3,6 @@ import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.domain.entity.Game;
 import com.fc.fcseoularchive.post.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -11,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +21,18 @@ public class GameService {
     private final GameRepository gameRepository;
     private final PostRepository postRepository;
 
-    // 최신 경기 순으로 모든 경기 일정 정보 반환
-    public List<GameResponse> getAllGames() {
-        List<Game> games = gameRepository.findAllByOrderByDateAsc();
+    // 경기 조회 (연도 필터링 선택적)
+    public List<GameResponse> getAllGames(Integer year) {
+        List<Game> games;
+        if (year != null) {
+            games = gameRepository.findByYearOrderByDateAsc(year);
+        } else {
+            games = gameRepository.findAllByOrderByDateAsc();
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userIdByString = authentication.getName();
         Long loginId = Long.parseLong(userIdByString); // 로그인 유저의 id
-
 
         return games.stream().map(game -> {
             GameResponse response = new GameResponse();
@@ -63,14 +65,9 @@ public class GameService {
         }).collect(Collectors.toList());
     }
 
-    /*@Value("3600000") // 1시간
-    private long GAMES_FOR_GUEST_EXPIRE_TIME;
-
-     redisDao.setValues(TOKEN_PREFIX + username, refreshToken, Duration.ofMillis(GAMES_FOR_GUEST_EXPIRE_TIME));*/
-
-    // Guest 용 경기 정보 조회 (캐시 적용 - 1시간 TTL)
-    @Cacheable(value = "guestGames", key = "'games'")
-    public List<GameResponse> getAllGamesForGuest () {
+    // Guest용 모든 경기 정보 조회 // todo ttl 1시간
+    @Cacheable(value = "guestGames", key = "'allGames'")
+    public List<GameResponse> getAllGamesForGuest() {
         List<Game> games = gameRepository.findAllByOrderByDateAsc();
 
         return games.stream().map(game -> {
@@ -100,6 +97,42 @@ public class GameService {
             return response;
         }).collect(Collectors.toList());
     }
+
+    // Guest용 특정 연도 경기 정보 조회 // todo ttl 1시간
+    @Cacheable(value = "guestGamesByYear", key = "#year")
+    public List<GameResponse> getAllGamesForGuestByYear(int year) {
+        List<Game> games = gameRepository.findByYearOrderByDateAsc(year);
+
+        return games.stream().map(game -> {
+            GameResponse response = new GameResponse();
+
+            response.setId(game.getId());
+            response.setDate(game.getDate());
+            response.setRound(game.getRound());
+            response.setHomeTeam(game.getHomeTeam());
+            response.setAwayTeam(game.getAwayTeam());
+            response.setStadium(game.getStadium());
+            response.setHomeScore(game.getHomeScore());
+            response.setAwayScore(game.getAwayScore());
+
+            response.setIsAttended(false);
+
+            // 상대팀 찾기 : 홈팀이 "FC Seoul" 이 아니면 awayTeam 이 opponent
+            String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
+            response.setOpponent(opponent);
+
+            // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
+            response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
+
+            // 경기 결과가 null 이 아니면 String 으로 변환 해서 반환
+            response.setResult(game.getResult() != null ? game.getResult().toString() : null);
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+
+
 
     // admin : 경기 추가
     @Transactional
@@ -158,11 +191,7 @@ public class GameService {
         gameRepository.deleteById(gameId);
     }
 
-  /*  public List<GameResponse> getAllGamesByYear(int year) {
 
-       *//* games 중 *//*
-
-
-    }*/
 }
+
 
