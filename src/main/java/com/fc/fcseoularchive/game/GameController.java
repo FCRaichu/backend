@@ -16,23 +16,32 @@ public class GameController {
 
     private final GameService gameService;
 
-    @Operation(summary = "경기 전체 일정 조회 (연도별 필터링 가능)")
-    @GetMapping
-    public ResponseEntity<List<GameResponse>> getGames(@RequestParam(required = false) Integer year) {
-        List<GameResponse> response = gameService.getAllGames(year);
+    @Operation(summary = "경기 전체 일정 조회")
+    @GetMapping("/all")
+    public ResponseEntity<List<GameResponse>> getGames() {
+        List<GameResponse> response = gameService.getAllGames(null, null);
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "경기 전체 일정 조회 - 로그인 전 (연도별 필터링 가능)")
+    @Operation(summary = "경기 전체 일정 조회 (년, 월 필터링)")
+    @GetMapping
+    public ResponseEntity<List<GameResponse>> getGames(
+            @RequestParam Integer year,
+            @RequestParam Integer month
+    ) {
+        List<GameResponse> response = gameService.getAllGames(year, month);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "경기 전체 일정 조회 - 로그인 전 (년, 월 필터링)")
     @GetMapping("/guest")
-    public ResponseEntity<List<GameResponse>> getGamesForGuest(@RequestParam(required = false) Integer year) {
+    public ResponseEntity<List<GameResponse>> getGamesForGuest(
+            @RequestParam Integer year,
+            @RequestParam Integer month
+    ) {
         List<GameResponse> response;
 
-        if (year != null) {
-            response = gameService.getAllGamesForGuestByYear(year);
-        } else {
-            response = gameService.getAllGamesForGuest();
-        }
+        response = gameService.getAllGamesForGuestByYear(year, month);
 
         return ResponseEntity.ok(response);
     }

@@ -25,8 +25,8 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
         return jpaQueryFactory
                 .selectOne()
                 .from(post)
-                .join(post.user, user).fetchJoin()
-                .join(post.game, game).fetchJoin()
+                .join(post.user, user)
+                .join(post.game, game)
                 .where(
                         post.user.id.eq(userId),
                         post.game.id.eq(gameId)

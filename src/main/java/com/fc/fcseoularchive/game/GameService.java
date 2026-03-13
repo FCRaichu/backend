@@ -21,13 +21,15 @@ public class GameService {
     private final GameRepository gameRepository;
     private final PostRepository postRepository;
 
-    // 경기 조회 (연도 필터링 선택적)
-    public List<GameResponse> getAllGames(Integer year) {
+    // 경기 조회 (년, 월 필터링)
+    public List<GameResponse> getAllGames(Integer year, Integer month) {
         List<Game> games;
-        if (year != null) {
-            games = gameRepository.findByYearOrderByDateAsc(year);
-        } else {
+        if (year != null && month != null) {
+            games = gameRepository.findByYearOrderByDateAsc(year, month);
+        } else if (year == null && month == null) {
             games = gameRepository.findAllByOrderByDateAsc();
+        } else {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "year 와 month 값이 필요합니다.");
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -65,43 +67,11 @@ public class GameService {
         }).collect(Collectors.toList());
     }
 
-    // Guest용 모든 경기 정보 조회 // todo ttl 1시간
-    @Cacheable(value = "guestGames", key = "'allGames'")
-    public List<GameResponse> getAllGamesForGuest() {
-        List<Game> games = gameRepository.findAllByOrderByDateAsc();
-
-        return games.stream().map(game -> {
-            GameResponse response = new GameResponse();
-
-            response.setId(game.getId());
-            response.setDate(game.getDate());
-            response.setRound(game.getRound());
-            response.setHomeTeam(game.getHomeTeam());
-            response.setAwayTeam(game.getAwayTeam());
-            response.setStadium(game.getStadium());
-            response.setHomeScore(game.getHomeScore());
-            response.setAwayScore(game.getAwayScore());
-
-            response.setIsAttended(false);
-
-            // 상대팀 찾기 : 홈팀이 "FC Seoul" 이 아니면 awayTeam 이 opponent
-            String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
-            response.setOpponent(opponent);
-
-            // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
-            response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
-
-            // 경기 결과가 null 이 아니면 String 으로 변환 해서 반환
-            response.setResult(game.getResult() != null ? game.getResult().toString() : null);
-
-            return response;
-        }).collect(Collectors.toList());
-    }
 
     // Guest용 특정 연도 경기 정보 조회 // todo ttl 1시간
     @Cacheable(value = "guestGamesByYear", key = "#year")
-    public List<GameResponse> getAllGamesForGuestByYear(int year) {
-        List<Game> games = gameRepository.findByYearOrderByDateAsc(year);
+    public List<GameResponse> getAllGamesForGuestByYear(int year, int month) {
+        List<Game> games = gameRepository.findByYearOrderByDateAsc(year, month);
 
         return games.stream().map(game -> {
             GameResponse response = new GameResponse();

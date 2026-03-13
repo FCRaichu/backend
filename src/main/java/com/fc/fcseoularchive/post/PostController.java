@@ -34,7 +34,8 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 본인 직관 인증 모든 게시물 일부 데이터 조회
+    // 본인 직관 인증 모든 게시물 데이터 조회
+    @Operation(summary = "본인 직관 게시물 전체 조회 (일부 데이터)")
     @GetMapping
     public ResponseEntity<List<PostResponse>> getPosts() {
 
