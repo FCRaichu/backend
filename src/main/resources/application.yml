@@ -17,11 +17,18 @@ spring:
         use_sql_comments: true
         show_sql: false
 
-  # 나중에 redis 쓰는거 대비
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
+
+  # 인증 및 인가 서버 (OAuth2) 설정
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/raichu
+
 
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
 jwt:
