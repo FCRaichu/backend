@@ -101,6 +101,37 @@ public class GameService {
         }).collect(Collectors.toList());
     }
 
+    public GameResponse getGameByUser(Long gameId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userIdByString = authentication.getName();
+        Long loginId = Long.parseLong(userIdByString); // 로그인 유저의 id
+
+        Game game = gameRepository.findById(gameId)
+                    .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
+
+        GameResponse response = new GameResponse();
+
+        response.setId(game.getId());
+        response.setDate(game.getDate());
+        response.setRound(game.getRound());
+        response.setHomeTeam(game.getHomeTeam());
+        response.setAwayTeam(game.getAwayTeam());
+        response.setStadium(game.getStadium());
+        response.setHomeScore(game.getHomeScore());
+        response.setAwayScore(game.getAwayScore());
+
+        boolean existPost = postRepository.existsByUserIdAndGameId(loginId, game.getId());
+        response.setIsAttended(existPost);
+
+        String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
+        response.setOpponent(opponent);
+
+        response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
+
+        response.setResult(game.getResult() != null ? game.getResult().toString() : null);
+
+        return response;
+    }
 
 
 
@@ -163,5 +194,4 @@ public class GameService {
 
 
 }
-
 

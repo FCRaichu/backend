@@ -25,7 +25,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
         return jpaQueryFactory
                 .selectOne()
                 .from(post)
-                .join(post.user, user)
+                .join(post.user, user) // exist 는 fetch join 이 필요없다
                 .join(post.game, game)
                 .where(
                         post.user.id.eq(userId),

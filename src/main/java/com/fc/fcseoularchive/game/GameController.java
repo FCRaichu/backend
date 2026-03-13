@@ -1,8 +1,10 @@
 package com.fc.fcseoularchive.game;
 
+import com.fc.fcseoularchive.domain.entity.Game;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +47,15 @@ public class GameController {
 
         return ResponseEntity.ok(response);
     }
+
+    // 경기 정보 가져 오기 200
+    @Operation(summary = "경기 정보 검색")
+    @GetMapping("/{gameId}")
+    public ResponseEntity<GameResponse> getGame (@PathVariable Long gameId) {
+        GameResponse game = gameService.getGameByUser(gameId);
+        return ResponseEntity.status(HttpStatus.OK).body(game);
+    }
+
 
 
 
