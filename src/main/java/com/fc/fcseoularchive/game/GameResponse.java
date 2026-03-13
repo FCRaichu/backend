@@ -3,13 +3,14 @@ package com.fc.fcseoularchive.game;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-public class GameResponse {
+public class GameResponse implements Serializable {
     private Long id;
     private LocalDateTime date;
     private Integer round;
@@ -26,4 +27,6 @@ public class GameResponse {
 
     private String status; // SCHEDULED (경기전) | FINISHED (경기후)
     private String result; // W, D, L
+
+    private Boolean isAttended; // 직관 기록 작성한 경기 인지
 }

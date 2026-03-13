@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +28,7 @@ public class SwaggerConfig {
                 .info(new Info().title("Todolist API")
                         .description("Todolist Application API Documentation")
                         .version("v1.0"))
+                .addServersItem(new Server().url("https://raichu.inwoohub.com"))
                 .addSecurityItem(securityRequirement)  // Security Requirement 추가
                 .schemaRequirement("BearerAuth", securityScheme);  // Security Scheme 추가
     }
