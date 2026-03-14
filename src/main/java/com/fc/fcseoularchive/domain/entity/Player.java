@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "palyers")
+@Entity
+@Table(name = "palyers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Player {
@@ -40,7 +41,7 @@ public class Player {
     private LocalDateTime createdAt;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         createdAt = LocalDateTime.now();
     }
 
