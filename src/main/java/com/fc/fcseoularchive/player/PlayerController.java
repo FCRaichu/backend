@@ -60,6 +60,30 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllActivePlayers());
     }
 
+    @Operation(summary = "현역 + FW 전체 조회")
+    @GetMapping("/active/fw")
+    public ResponseEntity<List<PlayerResponse>> getActiveFWPlayers() {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllFWActivePlayers());
+    }
+
+    @Operation(summary = "현역 + MF 전체 조회")
+    @GetMapping("/active/mf")
+    public ResponseEntity<List<PlayerResponse>> getActiveMFPlayers() {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllMFActivePlayers());
+    }
+
+    @Operation(summary = "현역 + DF 전체 조회")
+    @GetMapping("/active/df")
+    public ResponseEntity<List<PlayerResponse>> getActiveDFPlayers() {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllDFActivePlayers());
+    }
+
+    @Operation(summary = "현역 + GK 전체 조회")
+    @GetMapping("/active/gk")
+    public ResponseEntity<List<PlayerResponse>> getActiveGKPlayers() {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllGKActivePlayers());
+    }
+
 
 
 

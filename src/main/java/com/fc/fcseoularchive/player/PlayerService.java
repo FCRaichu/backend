@@ -1,6 +1,7 @@
 package com.fc.fcseoularchive.player;
 
 import com.fc.fcseoularchive.domain.entity.Player;
+import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
@@ -103,7 +104,7 @@ public class PlayerService {
         // 변경 감지로 저장 따로 안해줘도 수정 완료! (더티 체킹)
     }
 
-    // 현역 선수 전체 조회
+    // 현역선수 전체 조회
     public List<PlayerResponse> getAllActivePlayers() {
         return playerRepository.findAll()
                 .stream()
@@ -111,6 +112,48 @@ public class PlayerService {
                 .map( p -> new PlayerResponse(p) )
                 .toList();
     }
+
+    // 현역 + FW 선수 전체 조회
+    public List<PlayerResponse> getAllFWActivePlayers() {
+        return playerRepository.findAll()
+                .stream()
+                .filter( p -> p.getStatus() == PlayerStatus.ACTIVE)
+                .filter(p -> p.getPosition() == PlayerPosition.FW)
+                .map( p -> new PlayerResponse(p) )
+                .toList();
+    }
+
+    // 현역 + MF 선수 전체 조회
+    public List<PlayerResponse> getAllMFActivePlayers() {
+        return playerRepository.findAll()
+                .stream()
+                .filter( p -> p.getStatus() == PlayerStatus.ACTIVE)
+                .filter(p -> p.getPosition() == PlayerPosition.MF)
+                .map( p -> new PlayerResponse(p) )
+                .toList();
+    }
+
+    // 현역 + DF 선수 전체 조회
+    public List<PlayerResponse> getAllDFActivePlayers() {
+        return playerRepository.findAll()
+                .stream()
+                .filter( p -> p.getStatus() == PlayerStatus.ACTIVE)
+                .filter(p -> p.getPosition() == PlayerPosition.DF)
+                .map( p -> new PlayerResponse(p) )
+                .toList();
+    }
+
+    // 현역 + GK 선수 전체 조회
+    public List<PlayerResponse> getAllGKActivePlayers() {
+        return playerRepository.findAll()
+                .stream()
+                .filter( p -> p.getStatus() == PlayerStatus.ACTIVE)
+                .filter(p -> p.getPosition() == PlayerPosition.GK)
+                .map( p -> new PlayerResponse(p) )
+                .toList();
+    }
+
+
 
 
 }
