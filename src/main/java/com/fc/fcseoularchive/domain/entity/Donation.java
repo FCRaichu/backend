@@ -1,14 +1,15 @@
 package com.fc.fcseoularchive.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 /** User <-> Player 후원 N:M 중간 다리 테이블 */
-@Entity
-@Table(name = "donation")
+@Entity @Getter
 @NoArgsConstructor
+@Table(name = "donation")
 public class Donation {
 
     @Id

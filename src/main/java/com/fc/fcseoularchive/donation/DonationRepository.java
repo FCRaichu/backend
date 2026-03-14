@@ -2,6 +2,7 @@ package com.fc.fcseoularchive.donation;
 
 
 import com.fc.fcseoularchive.domain.entity.Donation;
+import com.fc.fcseoularchive.donation.querydsl.DonationRepositoryQuerydsl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DonationRepository extends JpaRepository<Donation,Long> {
+public interface DonationRepository extends JpaRepository<Donation,Long> , DonationRepositoryQuerydsl {
 
     @Query("SELECT d" +
             " FROM Donation d" +

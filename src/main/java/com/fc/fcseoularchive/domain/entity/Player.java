@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity @Getter
 @Table(name = "palyers")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Player {
 
