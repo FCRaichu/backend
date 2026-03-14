@@ -61,6 +61,17 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "본인 직관 게시물 1개 수정")
+    @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updatePost(Authentication authentication, @Valid @ModelAttribute PostUpdateRequest request,  @PathVariable Long postId) throws IOException {
+
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long loginId = Long.parseLong(jwt.getClaim("id"));
+
+        postService.updatePost(postId, loginId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @Operation(summary = "본인 직관 게시물 1개 삭제")
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(Authentication authentication, @PathVariable Long postId) {

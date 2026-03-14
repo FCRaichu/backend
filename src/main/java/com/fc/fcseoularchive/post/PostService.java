@@ -101,7 +101,7 @@ public class PostService {
                 .stream()
                 .map(post -> {
                     PostResponse response = PostResponse.from(post);
-                    imageRepository.findFirstByGame_IdAndUser_IdOrderByIdAsc(post.getGame().getId(), loginId)
+                    imageRepository.findFirstByGame_IdAndUser_IdOrderByIdAsc(post.getGame().getId(), loginId) // post 는 fetch join 이므로 getGame(), getUser() 로 필드 접근 해도 N+1 문제 발생 안함
                             .ifPresent(image -> response.setThumbnail(image.getImage()));
                     return response;
                 })
@@ -111,7 +111,7 @@ public class PostService {
     // user : 본인의 게시물 1개 상세 조회
     @Transactional(readOnly = true)
     public PostResponseDetail getPostDetail(Long postId, Long loginId) {
-        Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
+        Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId) // fetch join
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
 
         if (!Objects.equals(post.getUser().getId(), loginId)) {
@@ -130,6 +130,70 @@ public class PostService {
         return response;
     }
 
+    // 수정
+    @Transactional
+    public void updatePost(Long postId, Long loginId, PostUpdateRequest request) throws IOException {
+        Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId) // fetch join
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
+
+        if (!Objects.equals(post.getUser().getId(), loginId)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "수정하려는 게시글의 유저 아이디와 현재 로그인된 유저의 아이디가 다릅니다.");
+        }
+
+        // title 과 content 먼저 수정
+        post.update(request.getTitle(), request.getContent());
+
+        // 기존 이미지 파일 삭제
+        List<Image> oldImages = imageRepository.findByGame_IdAndUser_Id(post.getGame().getId(), loginId);
+
+        for (Image image : oldImages) {
+            String imagePath = image.getImage();
+            if (imagePath == null || imagePath.isBlank()) continue;
+
+            String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
+            File file = new File(System.getProperty("user.dir"), relativePath);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+
+        // 기존 이미지 db 에서 삭제
+        imageRepository.deleteByGame_IdAndUser_Id(post.getGame().getId(), loginId);
+
+        // 새 이미지 저장
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            List<Image> newImages = new ArrayList<>();
+            for (MultipartFile file : request.getImages()) {
+                if (file == null || file.isEmpty()) continue;
+
+                String rawFileName = file.getOriginalFilename();
+                if (rawFileName == null || rawFileName.isBlank()) continue;
+
+                String fileName = UUID.randomUUID() + "_" + rawFileName;
+                File destination = new File(uploadDir, fileName);
+                file.transferTo(destination);
+
+                String imagePath = "/upload/post/" + fileName;
+
+                newImages.add(Image.builder()
+                        .user(post.getUser())
+                        .game(post.getGame())
+                        .image(imagePath)
+                        .build());
+            }
+
+            if (!newImages.isEmpty()) {
+                imageRepository.saveAll(newImages);
+            }
+        }
+    }
+
+    // 삭제
     @Transactional
     public void deletePost(Long postId, Long loginId) {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
