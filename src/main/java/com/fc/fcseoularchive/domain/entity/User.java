@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "users")
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // PROTECTED : 외부에서 new User() 막기
 public class User {
 
