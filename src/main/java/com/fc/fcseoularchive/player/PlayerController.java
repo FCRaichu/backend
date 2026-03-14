@@ -54,6 +54,11 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "현역 선수 전체 조회")
+    @GetMapping("/active")
+    public ResponseEntity<List<PlayerResponse>> getActivePlayers() {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllActivePlayers());
+    }
 
 
 

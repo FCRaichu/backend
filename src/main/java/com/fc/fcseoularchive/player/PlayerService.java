@@ -1,12 +1,14 @@
 package com.fc.fcseoularchive.player;
 
 import com.fc.fcseoularchive.domain.entity.Player;
+import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.player.dto.PlayerResponse;
 import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +81,11 @@ public class PlayerService {
             player.updateStatus(req.getStatus());
         }
 
+        // 포지션 변경 해야한다면,
+        if(req.getPosition()!=null){
+            player.updatePosition(req.getPosition());
+        }
+
         // 업로드 폴더 없으면 폴더 생성 (그럴 일은 없지만.. 데이터 날리는 바람에 넣어줌)
         File dir = new File(uploadDir);
         if (!dir.exists()) {
@@ -96,7 +103,14 @@ public class PlayerService {
         // 변경 감지로 저장 따로 안해줘도 수정 완료! (더티 체킹)
     }
 
-
+    // 현역 선수 전체 조회
+    public List<PlayerResponse> getAllActivePlayers() {
+        return playerRepository.findAll()
+                .stream()
+                .filter( p -> p.getStatus() == PlayerStatus.ACTIVE)
+                .map( p -> new PlayerResponse(p) )
+                .toList();
+    }
 
 
 }

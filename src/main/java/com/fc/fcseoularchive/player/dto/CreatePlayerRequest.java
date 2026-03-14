@@ -1,6 +1,8 @@
 package com.fc.fcseoularchive.player.dto;
 
 
+import com.fc.fcseoularchive.domain.entity.Player;
+import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,6 +19,9 @@ public class CreatePlayerRequest {
 
     @NotNull
     private int backNumber;
+
+    @NotNull
+    private PlayerPosition position;
 
     @NotNull
     private MultipartFile image;

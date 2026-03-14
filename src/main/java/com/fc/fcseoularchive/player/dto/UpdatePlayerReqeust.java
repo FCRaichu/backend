@@ -1,5 +1,6 @@
 package com.fc.fcseoularchive.player.dto;
 
+import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,9 +17,11 @@ public class UpdatePlayerReqeust {
 
     private Integer backNumber;
 
-    private MultipartFile image;
-
+    private PlayerPosition position;
+    
     private PlayerStatus status;
+
+    private MultipartFile image;
 
 }
 

@@ -1,5 +1,6 @@
 package com.fc.fcseoularchive.domain.entity;
 
+import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import jakarta.persistence.*;
@@ -32,6 +33,10 @@ public class Player {
     private PlayerStatus status; // 현역, 임대, 이적
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PlayerPosition position;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -42,6 +47,7 @@ public class Player {
     public Player(CreatePlayerRequest req, String image) {
         this.name = req.getName();
         this.backNumber = req.getBackNumber();
+        this.position = req.getPosition();
         this.image = image;
         this.status = req.getStatus();
         this.createdAt = LocalDateTime.now();
@@ -50,6 +56,11 @@ public class Player {
     public void updateBackNumber(Integer backNumber) {
         this.backNumber = backNumber;
     }
+
+    public void updatePosition(PlayerPosition position) {
+        this.position = position;
+    }
+
 
     public void updateStatus(PlayerStatus status) {
         this.status = status;
