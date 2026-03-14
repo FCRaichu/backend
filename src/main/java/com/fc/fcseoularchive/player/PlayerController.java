@@ -40,6 +40,12 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllPlayers());
     }
 
+    @Operation(summary = "선수 단건 조회")
+    @GetMapping("/{id}")
+    public ResponseEntity<PlayerResponse> getPlayer(@PathVariable long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(playerService.getPlayer(id));
+    }
+
 
 
 
