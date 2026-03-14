@@ -4,6 +4,7 @@ import com.fc.fcseoularchive.domain.entity.Player;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.player.dto.PlayerResponse;
+import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,40 @@ public class PlayerService {
     public PlayerResponse getPlayer(long id) {
         return new PlayerResponse(playerRepository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 선수입니다.")));
+    }
+
+    // 선수 업데이트
+    @Transactional
+    public void updatePlayer(long id, UpdatePlayerReqeust req) throws IOException {
+        // 정보 가져오기
+        Player player = playerRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 선수입니다."));
+
+        // 등번호 변경 해야한다면,
+        if(req.getBackNumber()!=null){
+            player.updateBackNumber(req.getBackNumber());
+        }
+
+        // 상태 변경 해야한다면, (현역,임대,은퇴)
+        if(req.getStatus()!=null){
+            player.updateStatus(req.getStatus());
+        }
+
+        // 업로드 폴더 없으면 폴더 생성 (그럴 일은 없지만.. 데이터 날리는 바람에 넣어줌)
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // 이미지 변경 해야한다면,
+        if (req.getImage() != null && !req.getImage().isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + req.getImage().getOriginalFilename(); // UUID_파일 이름으로 파일 이름 지정해주기
+            File dest = new File(uploadDir, fileName); // 경로/fileName 으로 파일 만듦
+            req.getImage().transferTo(dest); // 실제 파일 저장해두기
+            player.updateImage("/upload/player/" + fileName);
+        }
+
+        // 변경 감지로 저장 따로 안해줘도 수정 완료! (더티 체킹)
     }
 
 

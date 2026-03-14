@@ -3,6 +3,7 @@ package com.fc.fcseoularchive.player;
 import com.fc.fcseoularchive.domain.entity.Player;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.player.dto.PlayerResponse;
+import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,6 +46,15 @@ public class PlayerController {
     public ResponseEntity<PlayerResponse> getPlayer(@PathVariable long id) {
         return ResponseEntity.status(HttpStatus.OK).body(playerService.getPlayer(id));
     }
+
+    @Operation(summary = "선수 정보 업데이트")
+    @PutMapping(value = "/{id}", consumes =  MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updatePlayer(@PathVariable long id, @ModelAttribute UpdatePlayerReqeust req) throws IOException {
+        playerService.updatePlayer(id, req);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
 
 
 

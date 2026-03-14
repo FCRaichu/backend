@@ -47,4 +47,15 @@ public class Player {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void updateBackNumber(Integer backNumber) {
+        this.backNumber = backNumber;
+    }
+
+    public void updateStatus(PlayerStatus status) {
+        this.status = status;
+    }
+
+    public void updateImage(String imagePath) {
+        this.image = imagePath;
+    }
 }
