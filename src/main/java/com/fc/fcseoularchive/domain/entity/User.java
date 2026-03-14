@@ -83,6 +83,10 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void subtractPoints(int point) {
+        this.points = this.points - point;
+    }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
