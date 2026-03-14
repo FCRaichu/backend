@@ -84,9 +84,12 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.OK).body(playerService.getAllGKActivePlayers());
     }
 
-
-
-
+    @Operation(summary = "선수 삭제, 사용 x, update로 처리하기")
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePlayer(@PathVariable long id) {
+        playerService.deletePlayer(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 
 }

@@ -153,6 +153,13 @@ public class PlayerService {
                 .toList();
     }
 
+    // 선수 삭제
+    public void deletePlayer(long id) {
+        Player player = playerRepository.findById(id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 선수입니다."));
+        playerRepository.delete(player);
+    }
+
 
 
 
