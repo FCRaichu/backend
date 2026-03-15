@@ -35,6 +35,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
     }
 
+    @Operation(summary = "닉네임 변경")
+    @PatchMapping("/nickname")
+    public ResponseEntity<Void> nicknameUpdate(Authentication authentication, @RequestBody UpdateNicknameRequest req) {
+        Long userId = currentUserProvider.getCurrentUserId(authentication);
+        userService.updateNickname(userId, req.getNickname());
+        return  ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     //    @Operation(summary = "유저 아이디로 1명 조회")
 //    @GetMapping("/user-id")
 //    public ResponseEntity<UserResponse> getUserId(@RequestParam String userId) {

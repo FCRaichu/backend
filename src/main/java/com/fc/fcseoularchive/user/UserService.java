@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -88,6 +89,20 @@ public class UserService {
         }
 
         return new UserResponseMe(user, checkPoint);
+    }
+
+    /** 유저 닉네임 변경 */
+    @Transactional
+    public void updateNickname(Long Id, String newNickname){
+        User user = userRepository.findById(Id)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
+
+        Optional<User> byNickname = userRepository.findByNickname(newNickname);
+
+        if(byNickname.isPresent()){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "이미 존재하는 닉네임입니다.");
+        }
+        user.updateNickname(newNickname);
     }
 
 
