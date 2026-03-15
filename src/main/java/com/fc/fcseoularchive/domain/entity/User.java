@@ -1,6 +1,5 @@
 package com.fc.fcseoularchive.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fc.fcseoularchive.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -40,6 +39,9 @@ public class User {
     @Column(name = "profile_image", length = 512)
     private String profileImage;
 
+    @Column(name = "attendance_streak")
+    private Integer attendanceStreak;
+
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
@@ -59,6 +61,7 @@ public class User {
         this.nickname = nickname;
         this.role = Role.USER;
         this.points = 0;
+        this.attendanceStreak = 0;
         this.profileImage = null;
         this.lastLogin = null;
         this.deletedAt = null;
@@ -95,10 +98,6 @@ public class User {
         this.profileImage = profileImage;
     }
 
-    public void updateLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
     public void changeRole(Role role) {
         this.role = role;
     }
@@ -109,6 +108,18 @@ public class User {
 
     public void softDelete() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void lastLoginUpdate(){
+        this.lastLogin = LocalDateTime.now();
+    }
+
+    public void addAttendanceStreak() {
+        this.attendanceStreak += 1 ;
+    }
+
+    public void initAttendanceStreak() {
+        this.attendanceStreak = 1;
     }
 
 }
