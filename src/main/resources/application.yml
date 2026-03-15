@@ -27,8 +27,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/fcraichu
-
+          issuer-uri: http://localhost:8080/realms/fcraichu   # inwoo 환경
+#          issuer-uri: http://keycloak:8080/realms/fcraichu   # 배포 환경
+#          issuer-uri: https://raichu.inwoohub.com/auth/realms/fcraichu  # 모든 로컬에서 가능
 
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
 jwt:
