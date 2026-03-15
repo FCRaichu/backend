@@ -8,4 +8,12 @@ public interface DonationRepositoryQuerydsl {
 
     List<Donation> getDonationAll();
 
+    List<Donation> getDonationAllFW();
+
+    List<Donation> getDonationAllMF();
+
+    List<Donation> getDonationAllDF();
+
+    List<Donation> getDonationAllGK();
+
 }

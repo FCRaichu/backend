@@ -55,48 +55,8 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    // 선수 전체 조회 + 유저 랭킹
-    public List<PlayerResponseRank> getAllPlayersV2() {
 
-        // 1. player 전부 가져오기
-        List<Player> players = playerRepository.findAll();
-
-        // 2. donation <-> 기준 user, player 모두 가져오기
-        List<Donation> donations = donationRepository.getDonationAll();
-
-        // 3. player의 id 를 기준으로 그루핑 하기
-        // -> 처음 접해보는 stream().collect(Collectors.groupingBy());
-        // d.getPlayer().getId() 를 기준(Key) 으로 같은 Key 를 Donation 끼리 묶어서 그룹핑(리스트로) 하기
-        Map<Integer, List<Donation>> donationMap = donations.stream()
-                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
-
-        // 4. players 를 stream 돌면서 매핑하기 (이때 TOP3 뽑으면 됨)
-        return players.stream()
-                .map(
-                        p -> {
-                            // 5. 3번 맵 기준으로 가져오는데, 비어있으면 빈 배열로 반환
-                            List<Donation> donationList = donationMap.getOrDefault(p.getId(), List.of()).stream()
-                                    // 오름차순으로 정렬
-                                    .sorted(Comparator.comparingInt(Donation::getPoint).reversed())
-//                                    .sorted( (a,b) -> Integer.compare(b.getPoint(), a.getPoint()))
-                                    .limit(3)
-                                    .toList();
-
-                            // 6. for문을 통해서 Map 형태에 채워주기
-                            HashMap<Integer, String> nicknameList = new HashMap<>();
-                            for (int i = 0; i < 3; i++) { // 랭킹은 3위까지만 필요
-                                if (i + 1 > donationList.size()) {
-                                    nicknameList.put(i + 1, "null");
-                                } else {
-                                    nicknameList.put(i + 1, donationList.get(i).getUser().getNickname());
-                                }
-                            }
-                            return new PlayerResponseRank(p, nicknameList);
-                        })
-                .toList();
-    }
-
-    // 선수 전체 조회 (구버전)
+    // 선수 전체 조회 (현역, 임대, 은퇴)
     public List<PlayerResponse> getAllPlayersV1() {
         return playerRepository.findAll()
                 .stream()
@@ -157,6 +117,153 @@ public class PlayerService {
                 .map(p -> new PlayerResponse(p))
                 .toList();
     }
+
+
+    /**
+     * 랭킹 관련
+     * getAllPlayersV2 (현역 선수 전체 조회 + 후원 랭킹)
+     * getAllPlayersFW (현역 FW 선수 전체 조회 + 후원 랭킹)
+     * getAllPlayersMF (현역 MF 선수 전체 조회 + 후원 랭킹)
+     * getAllPlayersDF (현역 DF 선수 전체 조회 + 후원 랭킹)
+     * getAllPlayersGK (현역 GK 선수 전체 조회 + 후원 랭킹)
+     */
+
+    // 선수 전체 조회 + 유저 랭킹
+    public List<PlayerResponseRank> getAllPlayersV2() {
+
+        // 1. player 전부 가져오기 (현역 선수만!)
+        List<Player> players = playerRepository.findByStatus(PlayerStatus.ACTIVE);
+
+        // 2. donation <-> 기준 user, player 모두 가져오기
+        List<Donation> donations = donationRepository.getDonationAll();
+
+        // 3. player의 id 를 기준으로 그루핑 하기
+        // -> 처음 접해보는 stream().collect(Collectors.groupingBy());
+        // d.getPlayer().getId() 를 기준(Key) 으로 같은 Key 를 Donation 끼리 묶어서 그룹핑(리스트로) 하기
+        Map<Integer, List<Donation>> donationMap = donations.stream()
+                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
+
+        // 4. players 를 stream 돌면서 매핑하기 (이때 TOP3 뽑으면 됨)
+        return players.stream()
+                .map(
+                        p -> {
+                            // 5. 3번 맵 기준으로 가져오는데, 비어있으면 빈 배열로 반환
+                            List<Donation> donationList = limitDonation(p, donationMap);
+
+                            // 6. for문을 통해서 Map 형태에 채워주기
+                            HashMap<Integer, String> nicknameList = new HashMap<>();
+                            RankNicknameList(donationList, nicknameList);
+                            return new PlayerResponseRank(p, nicknameList);
+                        })
+                .toList();
+    }
+
+    public List<PlayerResponseRank> getAllPlayersFW() {
+        // 포지션 FW인 선수만 뽑기
+        List<Player> players = playerRepository.findByStatusAndPosition(PlayerStatus.ACTIVE, PlayerPosition.FW);
+
+        List<Donation> donations = donationRepository.getDonationAllFW(); // 여기는 모둔 포지션 선수 다 들어있음 맞지? 그렇다면 FW 선수만 가져와야함.
+
+        Map<Integer, List<Donation>> donationMap = donations.stream()
+                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
+
+        return players.stream()
+                .map(p -> {
+                    List<Donation> donationList = limitDonation(p, donationMap);
+                    HashMap<Integer, String> nicknameList = new HashMap<>();
+                    RankNicknameList(donationList, nicknameList);
+                    return new PlayerResponseRank(p, nicknameList);
+                })
+                .toList();
+    }
+
+    public List<PlayerResponseRank> getAllPlayersMF() {
+        // 포지션 MF인 선수만 뽑기
+        List<Player> players = playerRepository.findByStatusAndPosition(PlayerStatus.ACTIVE, PlayerPosition.MF);
+
+        List<Donation> donations = donationRepository.getDonationAllMF();
+
+        Map<Integer, List<Donation>> donationMap = donations.stream()
+                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
+
+        return players.stream()
+                .map(p -> {
+                    List<Donation> donationList = limitDonation(p, donationMap);
+                    HashMap<Integer, String> nicknameList = new HashMap<>();
+                    RankNicknameList(donationList, nicknameList);
+                    return new PlayerResponseRank(p, nicknameList);
+                })
+                .toList();
+    }
+
+    public List<PlayerResponseRank> getAllPlayersDF() {
+        // 포지션 DF인 선수만 뽑기
+        List<Player> players = playerRepository.findByStatusAndPosition(PlayerStatus.ACTIVE, PlayerPosition.DF);
+
+        List<Donation> donations = donationRepository.getDonationAllDF();
+
+        Map<Integer, List<Donation>> donationMap = donations.stream()
+                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
+
+        return players.stream()
+                .map(p -> {
+                    List<Donation> donationList = limitDonation(p, donationMap);
+                    HashMap<Integer, String> nicknameList = new HashMap<>();
+                    RankNicknameList(donationList, nicknameList);
+                    return new PlayerResponseRank(p, nicknameList);
+                })
+                .toList();
+    }
+
+    public List<PlayerResponseRank> getAllPlayersGK() {
+        // 포지션 GK인 선수만 뽑기
+        List<Player> players = playerRepository.findByStatusAndPosition(PlayerStatus.ACTIVE, PlayerPosition.GK);
+
+        List<Donation> donations = donationRepository.getDonationAllGK();
+
+        Map<Integer, List<Donation>> donationMap = donations.stream()
+                .collect(Collectors.groupingBy(d -> d.getPlayer().getId()));
+
+        return players.stream()
+                .map(p -> {
+                    List<Donation> donationList = limitDonation(p, donationMap);
+                    HashMap<Integer, String> nicknameList = new HashMap<>();
+                    RankNicknameList(donationList, nicknameList);
+                    return new PlayerResponseRank(p, nicknameList);
+                })
+                .toList();
+    }
+
+    /**
+     * 플레이어 기준으로 그룹핑된 도네이션들중 포인트를 내림차순으로 정렬 후 상위 3개만 반환하는 메서드
+     * @param p : Player 객체
+     * @param donaMap : <player.id, Donation> 으로 이루어진 그루핑된 HashMap
+     * @return
+     */
+    private static List<Donation> limitDonation(Player p, Map<Integer, List<Donation>> donaMap) {
+        return donaMap.getOrDefault(p.getId(), List.of()).stream()
+                .sorted((a, b) -> Integer.compare(b.getPoint(), a.getPoint()))
+                .limit(3)
+                .toList();
+    }
+
+    /**
+     * 1 : user1, 2 : user2 랭킹 및 유저닉네임을 담기위해 만들어진 HashMap
+     * @param donationList : 플레이어 기준으로 그룹핑된 도네이션들중 포인트를 내림차순으로 정렬 후 상위 3개
+     * @param nicknameList : 들어올때는 빈 HashMap
+     */
+    private static void RankNicknameList(List<Donation> donationList, HashMap<Integer, String> nicknameList) {
+        for (int i = 0; i < 3; i++) { // 랭킹은 3위까지만 필요
+            if (i + 1 > donationList.size()) {
+                nicknameList.put(i + 1, "null");
+            } else {
+                nicknameList.put(i + 1, donationList.get(i).getUser().getNickname());
+            }
+        }
+    }
+
+
+    /** 여기서부터는 나중에 쓸 수도 있는 것 */
 
     // 현역 + FW 선수 전체 조회
     public List<PlayerResponse> getAllFWActivePlayers() {
