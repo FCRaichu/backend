@@ -73,7 +73,7 @@ public class SecurityConfig {
                                         "/api/users/refresh"
 
 
-                                        /** 일단.. 불편해서 다 열어주고 개발 운영 시 꼭 지정해주기 ! */
+//                                        /** 일단.. 불편해서 다 열어주고 개발 운영 시 꼭 지정해주기 ! */
                                         ,"/**"
 
                                 ).permitAll()
