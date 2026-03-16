@@ -7,7 +7,7 @@ import com.fc.fcseoularchive.game.GameRepository;
 import com.fc.fcseoularchive.post.dto.*;
 import com.fc.fcseoularchive.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Cache;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
@@ -98,7 +98,12 @@ public class PostService {
 
             if (!images.isEmpty())
                 imageRepository.saveAll(images);
+
+            // 게시물 작성하면 500 포인트
         }
+        user.addPoints(500);
+        System.out.println(user.getPoints());
+
     }
 
     // user : 본인의 게시물 전부 조회
@@ -216,6 +221,14 @@ public class PostService {
 
         if (!Objects.equals(post.getUser().getId(), loginId)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "삭제하려는 게시글의 유저 아이디와 현재 로그인된 유저의 아이디가 다릅니다.");
+        }
+
+        // 삭제, 포인트 반환 로직 - 포인트 악용 방지
+        User user = userRepository.findById(loginId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "유저를 찾을 수 없습니다."));
+
+        if (user.getPoints() < 500) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST",  "반환 포인트가 부족해 게시글을 삭제할 수 없습니다.");
         }
 
         List<Image> images = imageRepository.findByGame_IdAndUser_Id(post.getGame().getId(), loginId); // 삭제하려는 이미지들
