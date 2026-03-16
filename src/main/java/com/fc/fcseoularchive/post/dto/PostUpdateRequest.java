@@ -17,5 +17,10 @@ public class PostUpdateRequest {
     @NotNull
     private String content;
 
+    private Long gameId;
+
+    private List<String> existingImages;
+
     private List<MultipartFile> images;
+
 }

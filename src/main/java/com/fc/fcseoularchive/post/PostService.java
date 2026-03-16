@@ -146,32 +146,39 @@ public class PostService {
             @CacheEvict(value = "winRateRank", allEntries = true)
     })
     public void updatePost(Long postId, Long loginId, PostUpdateRequest request) throws IOException {
-        Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId) // fetch join
+        Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
 
         if (!Objects.equals(post.getUser().getId(), loginId)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "수정하려는 게시글의 유저 아이디와 현재 로그인된 유저의 아이디가 다릅니다.");
         }
 
-        // title 과 content 먼저 수정
+        // 제목, 내용 수정
         post.update(request.getTitle(), request.getContent());
 
-        // 기존 이미지 파일 삭제
+        // 프론트에서 유지하겠다고 보낸 기존 이미지 목록
+        List<String> keepImages = request.getExistingImages() != null
+                ? request.getExistingImages()
+                : new ArrayList<>();
+
+        // 현재 저장된 기존 이미지 목록
         List<Image> oldImages = imageRepository.findByGame_IdAndUser_Id(post.getGame().getId(), loginId);
 
+        // 유지 목록에 없는 이미지만 삭제
         for (Image image : oldImages) {
             String imagePath = image.getImage();
             if (imagePath == null || imagePath.isBlank()) continue;
 
-            String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
-            File file = new File(System.getProperty("user.dir"), relativePath);
-            if (file.exists()) {
-                file.delete();
+            if (!keepImages.contains(imagePath)) {
+                String relativePath = imagePath.startsWith("/") ? imagePath.substring(1) : imagePath;
+                File file = new File(System.getProperty("user.dir"), relativePath);
+                if (file.exists()) {
+                    file.delete();
+                }
+
+                imageRepository.delete(image);
             }
         }
-
-        // 기존 이미지 db 에서 삭제
-        imageRepository.deleteByGame_IdAndUser_Id(post.getGame().getId(), loginId);
 
         // 새 이미지 저장
         if (request.getImages() != null && !request.getImages().isEmpty()) {
