@@ -1,7 +1,6 @@
 package com.fc.fcseoularchive.user;
 
 
-import com.fc.fcseoularchive.config.jwt.JwtTokenProvider;
 import com.fc.fcseoularchive.domain.entity.User;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.dto.*;
