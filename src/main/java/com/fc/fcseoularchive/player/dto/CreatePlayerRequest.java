@@ -1,7 +1,6 @@
 package com.fc.fcseoularchive.player.dto;
 
 
-import com.fc.fcseoularchive.domain.entity.Player;
 import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.fc.fcseoularchive.domain.enums.PlayerStatus;
 import jakarta.validation.constraints.NotNull;

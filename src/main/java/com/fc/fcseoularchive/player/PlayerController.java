@@ -1,21 +1,14 @@
 package com.fc.fcseoularchive.player;
 
-import com.fc.fcseoularchive.domain.entity.Player;
-import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.player.dto.PlayerResponse;
 import com.fc.fcseoularchive.player.dto.PlayerResponseRank;
-import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 

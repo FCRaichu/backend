@@ -1,11 +1,9 @@
-package com.fc.fcseoularchive.error;
+package com.fc.fcseoularchive.error.dto;
 
-import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @AllArgsConstructor

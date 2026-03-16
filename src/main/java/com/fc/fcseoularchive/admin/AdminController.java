@@ -1,12 +1,12 @@
 package com.fc.fcseoularchive.admin;
 
 import com.fc.fcseoularchive.domain.entity.Game;
-import com.fc.fcseoularchive.game.GameAdminRequest;
+import com.fc.fcseoularchive.game.dto.GameAdminRequest;
 import com.fc.fcseoularchive.game.GameService;
 import com.fc.fcseoularchive.player.PlayerService;
 import com.fc.fcseoularchive.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
-import com.fc.fcseoularchive.post.PostAdminResponse;
+import com.fc.fcseoularchive.post.dto.PostAdminResponse;
 import com.fc.fcseoularchive.post.PostService;
 import com.fc.fcseoularchive.user.dto.UserResponse;
 import com.fc.fcseoularchive.user.UserService;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.webmvc.core.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

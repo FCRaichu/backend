@@ -1,5 +1,7 @@
 package com.fc.fcseoularchive.rank;
 
+import com.fc.fcseoularchive.rank.dto.AttendanceRankResponse;
+import com.fc.fcseoularchive.rank.dto.WinRateRankResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

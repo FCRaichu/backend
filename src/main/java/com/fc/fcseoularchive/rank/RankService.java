@@ -2,6 +2,8 @@ package com.fc.fcseoularchive.rank;
 
 
 import com.fc.fcseoularchive.post.PostRepository;
+import com.fc.fcseoularchive.rank.dto.AttendanceRankResponse;
+import com.fc.fcseoularchive.rank.dto.WinRateRankResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;

@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.game;
+package com.fc.fcseoularchive.game.dto;
 
 import com.fc.fcseoularchive.domain.enums.GameResult;
 import lombok.Getter;

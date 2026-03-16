@@ -2,6 +2,8 @@ package com.fc.fcseoularchive.game;
 
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.domain.entity.Game;
+import com.fc.fcseoularchive.game.dto.GameAdminRequest;
+import com.fc.fcseoularchive.game.dto.GameResponse;
 import com.fc.fcseoularchive.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

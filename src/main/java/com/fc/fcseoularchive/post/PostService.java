@@ -4,6 +4,7 @@ import com.fc.fcseoularchive.domain.entity.*;
 import com.fc.fcseoularchive.image.ImageRepository;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.game.GameRepository;
+import com.fc.fcseoularchive.post.dto.*;
 import com.fc.fcseoularchive.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

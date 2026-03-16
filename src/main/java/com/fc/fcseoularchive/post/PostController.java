@@ -1,5 +1,9 @@
 package com.fc.fcseoularchive.post;
 
+import com.fc.fcseoularchive.post.dto.PostCreateRequest;
+import com.fc.fcseoularchive.post.dto.PostResponse;
+import com.fc.fcseoularchive.post.dto.PostResponseDetail;
+import com.fc.fcseoularchive.post.dto.PostUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -61,7 +65,7 @@ public class PostController {
 
     @Operation(summary = "본인 직관 게시물 1개 수정")
     @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updatePost(Authentication authentication, @Valid @ModelAttribute PostUpdateRequest request,  @PathVariable Long postId) throws IOException {
+    public ResponseEntity<Void> updatePost(Authentication authentication, @Valid @ModelAttribute PostUpdateRequest request, @PathVariable Long postId) throws IOException {
 
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Long loginId = Long.parseLong(jwt.getClaim("id"));

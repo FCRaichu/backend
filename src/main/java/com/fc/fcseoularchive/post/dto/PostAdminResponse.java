@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.post;
+package com.fc.fcseoularchive.post.dto;
 
 
 import com.fc.fcseoularchive.domain.entity.Post;

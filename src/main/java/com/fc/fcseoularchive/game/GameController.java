@@ -1,6 +1,7 @@
 package com.fc.fcseoularchive.game;
 
 import com.fc.fcseoularchive.config.CurrentUserProvider;
+import com.fc.fcseoularchive.game.dto.GameResponse;
 import org.springframework.security.oauth2.jwt.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

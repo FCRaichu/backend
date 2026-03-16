@@ -12,7 +12,6 @@ import com.fc.fcseoularchive.player.dto.PlayerResponseRank;
 import com.fc.fcseoularchive.player.dto.UpdatePlayerReqeust;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

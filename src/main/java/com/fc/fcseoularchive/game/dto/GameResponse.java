@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.game;
+package com.fc.fcseoularchive.game.dto;
 
 import lombok.Getter;
 import lombok.Setter;

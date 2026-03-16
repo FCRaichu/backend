@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.post;
+package com.fc.fcseoularchive.post.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
