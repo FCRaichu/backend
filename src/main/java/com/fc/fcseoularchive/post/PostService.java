@@ -7,7 +7,6 @@ import com.fc.fcseoularchive.game.GameRepository;
 import com.fc.fcseoularchive.post.dto.*;
 import com.fc.fcseoularchive.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
@@ -247,6 +246,7 @@ public class PostService {
 
         imageRepository.deleteByGame_IdAndUser_Id(post.getGame().getId(), loginId);
         postRepository.delete(post);
+        user.subtractPoints(500);
     }
 
 
