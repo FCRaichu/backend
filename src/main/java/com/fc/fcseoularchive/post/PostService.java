@@ -7,6 +7,9 @@ import com.fc.fcseoularchive.game.GameRepository;
 import com.fc.fcseoularchive.post.dto.*;
 import com.fc.fcseoularchive.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,10 @@ public class PostService {
 
     // PostCreateRequest 에
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "attendanceRank", allEntries = true),
+            @CacheEvict(value = "winRateRank", allEntries = true)
+    })
     public void createPost(Long loginId, PostCreateRequest request) throws IOException { // Long 타입의 id 사용 주의
         User user = userRepository.findById(loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "404", "NOT_FOUND", "유저를 찾을 수 없습니다."));
@@ -132,6 +139,10 @@ public class PostService {
 
     // 수정
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "attendanceRank", allEntries = true),
+            @CacheEvict(value = "winRateRank", allEntries = true)
+    })
     public void updatePost(Long postId, Long loginId, PostUpdateRequest request) throws IOException {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId) // fetch join
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
@@ -195,6 +206,10 @@ public class PostService {
 
     // 삭제
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "attendanceRank", allEntries = true),
+            @CacheEvict(value = "winRateRank", allEntries = true)
+    })
     public void deletePost(Long postId, Long loginId) {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));

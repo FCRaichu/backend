@@ -97,17 +97,6 @@ public class RedisConfig {
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper redisObjectMapper) {
 
-       /* // ObjectMapper 생성
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // LocalDateTime 해결 - 시간/날짜 타입도 직렬/역직렬 가능
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 날짜를 "2026-03-15T.." 형태로 저장
-
-        // 캐시에서 객체를 꺼낼 때 원래 타입으로 정확히 복원
-        PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
-                .allowIfSubType(Object.class)
-                .build();
-        objectMapper.activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL);*/
-
         // ObjectMapper 를 Redis 직렬화기에 장착
         GenericJackson2JsonRedisSerializer customSerializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper);
 
