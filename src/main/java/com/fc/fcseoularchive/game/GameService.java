@@ -1,12 +1,11 @@
 package com.fc.fcseoularchive.game;
+
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.domain.entity.Game;
 import com.fc.fcseoularchive.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,7 @@ public class GameService {
     private final PostRepository postRepository;
 
     // 경기 조회 (년, 월 필터링)
-    public List<GameResponse> getAllGames(Integer year, Integer month) {
+    public List<GameResponse> getAllGames(Long loginId, Integer year, Integer month) {
         List<Game> games;
         if (year != null && month != null) {
             games = gameRepository.findByYearOrderByDateAsc(year, month);
@@ -31,10 +30,6 @@ public class GameService {
         } else {
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "year 와 month 값이 필요합니다.");
         }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userIdByString = authentication.getName();
-        Long loginId = Long.parseLong(userIdByString); // 로그인 유저의 id
 
         return games.stream().map(game -> {
             GameResponse response = new GameResponse();
@@ -53,8 +48,8 @@ public class GameService {
             boolean existPost = postRepository.existsByUserIdAndGameId(loginId, game.getId());
             response.setIsAttended(existPost);
 
-            // 상대팀 찾기 : 홈팀이 "FC Seoul" 이 아니면 awayTeam 이 opponent
-            String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
+            // 상대팀 찾기 : 홈팀이 "FC서울" 이 아니면 awayTeam 이 opponent
+            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
             response.setOpponent(opponent);
 
             // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
@@ -68,8 +63,8 @@ public class GameService {
     }
 
 
-    // Guest용 특정 연도 경기 정보 조회 // todo ttl 1시간
-    @Cacheable(value = "guestGamesByYear", key = "#year")
+    // Guest용 특정 연도, 달 경기 정보 조회 ttl 1시간
+    @Cacheable(value = "guestGames", key = "#year + '-' + #month")
     public List<GameResponse> getAllGamesForGuestByYear(int year, int month) {
         List<Game> games = gameRepository.findByYearOrderByDateAsc(year, month);
 
@@ -87,8 +82,8 @@ public class GameService {
 
             response.setIsAttended(false);
 
-            // 상대팀 찾기 : 홈팀이 "FC Seoul" 이 아니면 awayTeam 이 opponent
-            String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
+            // 상대팀 찾기 : 홈팀이 "FC서울" 이 아니면 awayTeam 이 opponent
+            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
             response.setOpponent(opponent);
 
             // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
@@ -101,13 +96,10 @@ public class GameService {
         }).collect(Collectors.toList());
     }
 
-    public GameResponse getGameByUser(Long gameId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userIdByString = authentication.getName();
-        Long loginId = Long.parseLong(userIdByString); // 로그인 유저의 id
+    public GameResponse getGameByUser(Long loginId, Long gameId) {
 
         Game game = gameRepository.findById(gameId)
-                    .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
 
         GameResponse response = new GameResponse();
 
@@ -123,7 +115,7 @@ public class GameService {
         boolean existPost = postRepository.existsByUserIdAndGameId(loginId, game.getId());
         response.setIsAttended(existPost);
 
-        String opponent = game.getHomeTeam().equals("FC Seoul") ? game.getAwayTeam() : game.getHomeTeam();
+        String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
         response.setOpponent(opponent);
 
         response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
@@ -132,7 +124,6 @@ public class GameService {
 
         return response;
     }
-
 
 
     // admin : 경기 추가

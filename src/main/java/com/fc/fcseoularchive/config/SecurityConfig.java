@@ -1,6 +1,5 @@
 package com.fc.fcseoularchive.config;
 
-import com.fc.fcseoularchive.config.jwt.JwtTokenProvider;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.core.convert.converter.Converter;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +23,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final JwtTokenProvider jwtTokenProvider;
 
     // 패스워드 암호화 관련 메서드 Bean 등록
     @Bean
@@ -78,7 +74,7 @@ public class SecurityConfig {
 
 
                                         /** 일단.. 불편해서 다 열어주고 개발 운영 시 꼭 지정해주기 ! */
-//                                        ,"/**"
+                                        ,"/**"
 
                                 ).permitAll()
 
@@ -88,12 +84,11 @@ public class SecurityConfig {
 
                                 /** 관리자만 가능한 곳! */
 //                                .requestMatchers(
-//                                        "/api/admin/**",
-//                                        "/api/**/admin/**"
+//                                        "/api/admin/**"
 //                                ).hasRole("ADMIN")
 
                                 /** 위에 없으면 로그인된 회원만 가능! */
-                                .anyRequest().authenticated()
+//                                .anyRequest().authenticated()
                 );
 
         /** JWT 인증을 위해 직접 구현한 필터 UsernamePasswordAuthticationFilter 전에 실행하기 */
@@ -103,7 +98,7 @@ public class SecurityConfig {
 
         /** OAuth2 리소스 서버 설정 및 토큰에서 ROLE 꺼내오기 */
         httpSecurity
-                .oauth2ResourceServer(oaut2 -> oaut2
+                .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
 
@@ -111,13 +106,6 @@ public class SecurityConfig {
 
     }
 
-    /** ?? */
-    @Bean
-    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter(){
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
-        return converter;
-    }
 
     /** CORS 설정 */
     @Bean
@@ -134,30 +122,30 @@ public class SecurityConfig {
         return source;
     }
 
+    /** Keycloak의 Jwt 의 권한을 꺼내서 Authentication 에 올려주기 */
+    @Bean
+    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter(){
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(new KeycloakRealmRoleConverter());
+        return converter;
+    }
+
     /** 클레임에서 권한을 꺼내서 시큐리티 컨텍스트에 권한 등록 */
     static class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>>{
         @Override
         public Collection<GrantedAuthority> convert(Jwt jwt){
             Collection<GrantedAuthority> authorities = new ArrayList<>();
-            Map<String, Object> realmAccess = jwt.getClaim("realm_access");
 
-            // 릴름에서 access 가 없다면 빈 권한으로 반환
-            if(realmAccess != null){
+            // 클레임에서 "role" 꺼내기
+            String role = jwt.getClaim("role");
+            if(role == null){
+                // 없다면 바로 반환
                 return authorities;
+            } else {
+                // 있다면 권한 리스트에 추가해주기
+                authorities.add(new SimpleGrantedAuthority("ROLE_"+role));
             }
 
-            // 릴름_Access에서 roles: 꺼내기
-            Object rolesObj = realmAccess.get("roles");
-            if(!(rolesObj instanceof List<?> roles)){
-                // roles에 아무것도 없다면 빈 배열 반환
-                return authorities;
-            }
-
-            for (Object role : roles) {
-                if(role instanceof String roleNmae){
-                    authorities.add(new SimpleGrantedAuthority("ROLE_"+roleNmae)); // 시큐리티에서 hasRole() 쓰려면 프리픽스로 "ROLE_" 붙여주기
-                }
-            }
             return authorities;
         }
     }
