@@ -24,7 +24,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /** 회원 가입 */
+    /**
+     * 회원 가입
+     */
     @Transactional
     public void createUser(UserCreateRequest req) {
         // 유저 아이디 중복 검사
@@ -43,8 +45,10 @@ public class UserService {
     }
 
 
-    /** 회원 정보 조회 + 출석 확인
-     *  조히여서 ReadOnly = true 하고 싶지만.. 출석 체크 때문에 풀어둠 */
+    /**
+     * 회원 정보 조회 + 출석 확인
+     * 조히여서 ReadOnly = true 하고 싶지만.. 출석 체크 때문에 풀어둠
+     */
     @Transactional
     public UserResponseMe getUser(Long id) {
         User user = userRepository.findById(id)
@@ -57,23 +61,28 @@ public class UserService {
         LocalDateTime now = LocalDateTime.now();
 
         // 첫 로그인인 경우
-        if(lastLogin == null){
+        if (lastLogin == null) {
             checkPoint = 1000;
             user.lastLoginUpdate();
             user.addPoints(1000);
             user.initAttendanceStreak(); // =1 일
         } else {
             // 첫 로그인이 아닌 경우
-            if(lastLogin.getDayOfMonth() != now.getDayOfMonth()) {
+            if (lastLogin.getDayOfMonth() != now.getDayOfMonth()) {
                 // 날짜가 다르다면, 1000 포인트 지급
                 user.addPoints(1000);
                 checkPoint = 1000;
                 user.lastLoginUpdate();
 
                 // 연속 출석 체크? (년도 같고, 월 같고, 일만 하루 차이!)
-                if (lastLogin.getYear() ==  now.getYear()
-                        && lastLogin.getMonth() ==  now.getMonth() && lastLogin.getDayOfMonth()+1 == now.getDayOfMonth()) {
+                if (lastLogin.getYear() == now.getYear()
+                        && lastLogin.getMonth() == now.getMonth() && lastLogin.getDayOfMonth() + 1 == now.getDayOfMonth()) {
                     user.addAttendanceStreak(); // +1 일
+                    // 만약에 7배수 라면 추가 포인트 지급 (3000)
+                    if (user.getAttendanceStreak() % 7 == 0) {
+                        checkPoint += 3000;
+                        user.addPoints(3000);
+                    }
                 } else {
                     // 연속 출석이 아니라면 오늘 부터 1일
                     user.initAttendanceStreak(); // =1 일
@@ -85,20 +94,21 @@ public class UserService {
         return new UserResponseMe(user, checkPoint);
     }
 
-    /** 유저 닉네임 변경 */
+    /**
+     * 유저 닉네임 변경
+     */
     @Transactional
-    public void updateNickname(Long Id, String newNickname){
+    public void updateNickname(Long Id, String newNickname) {
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
 
         Optional<User> byNickname = userRepository.findByNickname(newNickname);
 
-        if(byNickname.isPresent()){
+        if (byNickname.isPresent()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "이미 존재하는 닉네임입니다.");
         }
         user.updateNickname(newNickname);
     }
-
 
 
     /**
