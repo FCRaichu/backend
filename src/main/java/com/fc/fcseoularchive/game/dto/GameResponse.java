@@ -1,6 +1,10 @@
 package com.fc.fcseoularchive.game.dto;
 
+import com.fc.fcseoularchive.domain.entity.Game;
+import com.fc.fcseoularchive.domain.enums.GameResult;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -8,6 +12,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameResponse implements Serializable {
     private Long id;
     private LocalDateTime date;
@@ -24,7 +30,22 @@ public class GameResponse implements Serializable {
     private Integer awayScore;
 
     private String status; // SCHEDULED (경기전) | FINISHED (경기후)
-    private String result; // W, D, L
+    private GameResult result; // W, D, L
 
     private Boolean isAttended; // 직관 기록 작성한 경기 인지
+
+    public GameResponse(Game game,String opponent, String status, Boolean isAttended) {
+        this.id = game.getId();
+        this.date = game.getDate();
+        this.round = game.getRound();
+        this.homeTeam = game.getHomeTeam();
+        this.awayTeam = game.getAwayTeam();
+        this.opponent = opponent;
+        this.stadium = game.getStadium();
+        this.homeScore = game.getHomeScore();
+        this.awayScore = game.getAwayScore();
+        this.status = status;
+        this.result = game.getResult();
+        this.isAttended = isAttended;
+    }
 }

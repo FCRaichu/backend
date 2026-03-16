@@ -2,9 +2,6 @@ package com.fc.fcseoularchive.donation.querydsl;
 
 
 import com.fc.fcseoularchive.domain.entity.Donation;
-import com.fc.fcseoularchive.domain.entity.QDonation;
-import com.fc.fcseoularchive.domain.entity.QPlayer;
-import com.fc.fcseoularchive.domain.entity.QUser;
 import com.fc.fcseoularchive.domain.enums.PlayerPosition;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

@@ -10,9 +10,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.fc.fcseoularchive.domain.entity.QGame.*;
+import static com.fc.fcseoularchive.domain.entity.QPost.*;
+import static com.fc.fcseoularchive.domain.entity.QUser.*;
+
 @RequiredArgsConstructor
 @Repository
-public class PostRepositoryImpl implements PostRepositoryQueryDsl{
+public class PostRepositoryImpl implements PostRepositoryQueryDsl {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -46,6 +50,17 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl{
                 .join(post.user, user).fetchJoin()
                 .join(post.game, game).fetchJoin()
                 .where(post.user.id.eq(userId))
+                .fetch();
+    }
+
+    @Override
+    public List<Post> getPostAll(Long loginId) {
+        return jpaQueryFactory
+                .select(post)
+                .from(post)
+                .leftJoin(post.user, user).fetchJoin()
+                .leftJoin(post.game, game).fetchJoin()
+                .where(post.user.id.eq(loginId))
                 .fetch();
     }
 }
