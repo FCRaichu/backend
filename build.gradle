@@ -54,6 +54,9 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+    // 비속어 필터
+    implementation 'io.github.vaneproject:badwordfiltering:1.0.0'
+
     //Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers' //서버 안켜도 테스트할때 컨테이너 띄우고 닫아주는 역할
