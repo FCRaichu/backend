@@ -126,13 +126,15 @@ public class PostService {
         int win = 0;
         int lose = 0;
         int draw = 0;
+        int count = 0;
 
         // 승 무 패 필터걸기
         for (Post post : postAll) {
-            if( post.getGame().getResult().equals(GameResult.W)) win++;
-            else if(post.getGame().getResult().equals(GameResult.L)) lose++;
+            if (post.getGame().getResult().equals(GameResult.W)) win++;
+            else if (post.getGame().getResult().equals(GameResult.L)) lose++;
             else draw++;
         }
+        count = win + lose + draw;
 
         // 승리 승률 구하기
         float winRate = (float) win / (float) postAll.size();
@@ -143,7 +145,7 @@ public class PostService {
         loseRate = Math.round(loseRate * 10) / 10.0f;
         drawRate = Math.round(drawRate * 10) / 10.0f;
 
-        return new PostGetAllResponse(list, win, lose, draw, winRate, loseRate, drawRate);
+        return new PostGetAllResponse(list, win, lose, draw, count, winRate, loseRate, drawRate);
 
     }
 
