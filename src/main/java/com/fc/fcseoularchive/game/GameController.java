@@ -29,7 +29,7 @@ public class GameController {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Long loginId = Long.parseLong(jwt.getClaim("id"));
 
-        List<GameResponse> response = gameService.getAllGamesV2(loginId,null, null);
+        List<GameResponse> response = gameService.getAllGames(loginId,null, null);
         return ResponseEntity.ok(response);
     }
 
@@ -40,7 +40,7 @@ public class GameController {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Long loginId = Long.parseLong(jwt.getClaim("id"));
 
-        List<GameResponse> response = gameService.getAllGamesV2(loginId,year, month);
+        List<GameResponse> response = gameService.getAllGames(loginId,year, month);
         return ResponseEntity.ok(response);
     }
 
@@ -52,7 +52,7 @@ public class GameController {
     ) {
         List<GameResponse> response;
 
-        response = gameService.getAllGamesV2ForGuest(null, year, month);
+        response = gameService.getAllGamesForGuest(null, year, month);
 
         return ResponseEntity.ok(response);
     }
@@ -63,7 +63,7 @@ public class GameController {
     public ResponseEntity<GameResponse> getGame (Authentication authentication, @PathVariable Long gameId) {
         Long loginId = currentUserProvider.getCurrentUserId(authentication);
 
-        GameResponse game = gameService.getGameByUser(loginId, gameId);
+        GameResponse game = gameService.getGameById(loginId, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(game);
     }
 

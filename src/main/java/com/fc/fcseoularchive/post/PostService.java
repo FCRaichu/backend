@@ -109,6 +109,7 @@ public class PostService {
     public PostGetAllResponse getPosts(Long loginId) { // 로그인 유저의 PK
 
         // 내가 직관한 경기 post만 전부 가져오기
+        // user, game fetch join
         List<Post> postAll = postRepository.findByUser_Id(loginId);
 
         // 기존꺼 그대로 사용
@@ -130,6 +131,9 @@ public class PostService {
 
         // 승 무 패 필터걸기
         for (Post post : postAll) {
+            // 프론트에서 경기 결과가 null 이면 직관 작성 못하게 2중으로 처리 필요
+            if (post.getGame().getResult() == null) continue;
+
             if (post.getGame().getResult().equals(GameResult.W)) win++;
             else if (post.getGame().getResult().equals(GameResult.L)) lose++;
             else draw++;
