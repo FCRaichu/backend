@@ -132,7 +132,7 @@ public class PlayerService {
      */
 
     // 선수 전체 조회 + 유저 랭킹
-    // cacheEvict : 1. 선수에게 후원할 때, 2. 선수 정보가 수정될 때
+    // cacheEvict : 1. 선수에게 후원할 때, 2. 선수 정보가 수정(삭제)될 때
     @Cacheable(value = "allPlayers", key = "'2026'")
     public List<PlayerResponseRank> getAllPlayersV2() {
 
@@ -311,6 +311,7 @@ public class PlayerService {
     }
 
     // 선수 삭제
+    @Transactional
     @CacheEvict(value = "allPlayers", allEntries = true)
     public void deletePlayer(long id) {
         Player player = playerRepository.findById(id)
