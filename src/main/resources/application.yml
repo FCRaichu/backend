@@ -65,6 +65,10 @@ keycloak:
   client-secret: your-secret
 
 
+frontend:
+  redirect-uri: http://localhost:5173/callback
+
+
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
 #jwt:
 #  secret: ${SPRING_JWT_SECRET:CD9KEjLo1DkQB6EMWo8RZPl2i8XAxv4RLVNAC3dmdVf}
