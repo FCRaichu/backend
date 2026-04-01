@@ -8,9 +8,7 @@ import lombok.Getter;
 public class UserResponseMe {
 
 
-    private final Long id;
-
-    private final String userId;
+    private final String id;
 
     private final String nickname;
 
@@ -26,7 +24,6 @@ public class UserResponseMe {
 
     public UserResponseMe(User user, Integer checkPoint ) {
         this.id = user.getId();
-        this.userId = user.getUserId();
         this.nickname = user.getNickname();
         this.role = user.getRole();
         this.points = user.getPoints();

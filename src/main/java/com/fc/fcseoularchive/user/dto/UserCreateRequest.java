@@ -8,10 +8,6 @@ import lombok.Setter;
 @Setter
 public class UserCreateRequest {
 
-    private String userId;
-
-    private String password;
-
     private String nickname;
 
 }

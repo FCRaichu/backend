@@ -27,7 +27,7 @@ public class GameService {
     private final PostRepository postRepository;
 
     // 경기 조회 (년, 월 필터링)
-    public List<GameResponse> getAllGames(Long loginId, Integer year, Integer month) {
+    public List<GameResponse> getAllGames(String loginId, Integer year, Integer month) {
         List<Game> games;
         if (year != null && month != null) {
             games = gameRepository.findByYearOrderByDateAsc(year, month);
@@ -68,7 +68,7 @@ public class GameService {
     }
 
     // 경기 조회 (년, 월 필터링)
-    public List<GameResponse> getAllGamesV2(Long loginId, Integer year, Integer month) {
+    public List<GameResponse> getAllGamesV2(String loginId, Integer year, Integer month) {
         // 경기를 전부 가져올건데 -> 유저가 직관했다면 True 담아주고 아니라면, false 담아주는 로직
 
         // 1. 경기 일단 다 가져옴 (왜? true, false 할거임)
@@ -114,7 +114,7 @@ public class GameService {
     }
 
     @Cacheable(value = "guestGames", key = "#year + '-' + #month")
-    public List<GameResponse> getAllGamesV2ForGuest(Long loginId, Integer year, Integer month) {
+    public List<GameResponse> getAllGamesV2ForGuest(String loginId, Integer year, Integer month) {
 
         List<Game> gameAll = gameRepository.getAll(year, month);
 
@@ -191,7 +191,7 @@ public class GameService {
         }).collect(Collectors.toList());
     }*/
 
-    public GameResponse getGameByUser(Long loginId, Long gameId) {
+    public GameResponse getGameByUser(String loginId, Long gameId) {
 
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));

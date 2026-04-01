@@ -7,9 +7,7 @@ import lombok.Getter;
 @Getter
 public class UserResponse {
 
-    private final Long id;
-
-    private final String userId;
+    private final String id;
 
     private final String nickname;
 
@@ -20,7 +18,6 @@ public class UserResponse {
 
     public UserResponse(User user) {
         this.id = user.getId();
-        this.userId = user.getUserId();
         this.nickname = user.getNickname();
         this.role = user.getRole();
         this.points = user.getPoints();

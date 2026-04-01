@@ -2,7 +2,6 @@ package com.fc.fcseoularchive.game;
 
 import com.fc.fcseoularchive.config.CurrentUserProvider;
 import com.fc.fcseoularchive.game.dto.GameResponse;
-import org.springframework.security.oauth2.jwt.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,7 @@ public class GameController {
     @GetMapping("/all")
     public ResponseEntity<List<GameResponse>> getGames(Authentication authentication) {
 
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        Long loginId = Long.parseLong(jwt.getClaim("id"));
+        String loginId = currentUserProvider.getCurrentUserId(authentication);
 
         List<GameResponse> response = gameService.getAllGamesV2(loginId,null, null);
         return ResponseEntity.ok(response);
@@ -37,8 +35,7 @@ public class GameController {
     @GetMapping
     public ResponseEntity<List<GameResponse>> getGames(Authentication authentication, @RequestParam Integer year, @RequestParam Integer month) {
 
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        Long loginId = Long.parseLong(jwt.getClaim("id"));
+        String loginId = currentUserProvider.getCurrentUserId(authentication);
 
         List<GameResponse> response = gameService.getAllGamesV2(loginId,year, month);
         return ResponseEntity.ok(response);
@@ -61,7 +58,7 @@ public class GameController {
     @Operation(summary = "경기 정보 검색")
     @GetMapping("/{gameId}")
     public ResponseEntity<GameResponse> getGame (Authentication authentication, @PathVariable Long gameId) {
-        Long loginId = currentUserProvider.getCurrentUserId(authentication);
+        String loginId = currentUserProvider.getCurrentUserId(authentication);
 
         GameResponse game = gameService.getGameByUser(loginId, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(game);

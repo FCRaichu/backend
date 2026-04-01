@@ -40,7 +40,7 @@ public class PostService {
             @CacheEvict(value = "attendanceRank", allEntries = true),
             @CacheEvict(value = "winRateRank", allEntries = true)
     })
-    public void createPost(Long loginId, PostCreateRequest request) throws IOException { // Long 타입의 id 사용 주의
+    public void createPost(String loginId, PostCreateRequest request) throws IOException { // Long 타입의 id 사용 주의
         User user = userRepository.findById(loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "404", "NOT_FOUND", "유저를 찾을 수 없습니다."));
 
@@ -106,7 +106,7 @@ public class PostService {
 
     // user : 본인의 게시물 전부 조회
     @Transactional(readOnly = true)
-    public PostGetAllResponse getPosts(Long loginId) { // 로그인 유저의 PK
+    public PostGetAllResponse getPosts(String loginId) { // 로그인 유저의 PK
 
         // 내가 직관한 경기 post만 전부 가져오기
         List<Post> postAll = postRepository.findByUser_Id(loginId);
@@ -142,7 +142,7 @@ public class PostService {
 
     // user : 본인의 게시물 1개 상세 조회
     @Transactional(readOnly = true)
-    public PostResponseDetail getPostDetail(Long postId, Long loginId) {
+    public PostResponseDetail getPostDetail(Long postId, String loginId) {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId) // fetch join
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
 
@@ -168,7 +168,7 @@ public class PostService {
             @CacheEvict(value = "attendanceRank", allEntries = true),
             @CacheEvict(value = "winRateRank", allEntries = true)
     })
-    public void updatePost(Long postId, Long loginId, PostUpdateRequest request) throws IOException {
+    public void updatePost(Long postId, String loginId, PostUpdateRequest request) throws IOException {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
 
@@ -242,7 +242,7 @@ public class PostService {
             @CacheEvict(value = "attendanceRank", allEntries = true),
             @CacheEvict(value = "winRateRank", allEntries = true)
     })
-    public void deletePost(Long postId, Long loginId) {
+    public void deletePost(Long postId, String loginId) {
         Post post = postRepository.findByIdAndUserIdWithGame(postId, loginId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "게시글을 찾을 수 없습니다."));
 

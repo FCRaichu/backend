@@ -3,6 +3,7 @@ package com.fc.fcseoularchive.user;
 
 import com.fc.fcseoularchive.config.badword.BadWordFiltering;
 import com.fc.fcseoularchive.domain.entity.User;
+import com.fc.fcseoularchive.domain.enums.Role;
 import com.fc.fcseoularchive.error.ApiException;
 import com.fc.fcseoularchive.user.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -31,24 +32,28 @@ public class UserService {
      * 회원 가입
      */
     @Transactional
-    public void createUser(UserCreateRequest req) {
+    public void createUser(String loginId, UserCreateRequest req, String userRole) {
         // 닉네임 비속어 필터 (욕설 포함 시 ture 반환)
         if(badWordFiltering.check(req.getNickname())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "닉네임에 비속어가 포함되어있습니다.");
         }
 
         // 유저 아이디 중복 검사
-        if (userRepository.findByUserId(req.getUserId()).isPresent()) {
+        if (userRepository.findById(loginId).isPresent()) {
             throw new ApiException(HttpStatus.CONFLICT, "409", "CONFLICT", "이미 존재하는 아이디입니다.");
         }
         // 닉네임 중복 검사
-        if (userRepository.findByNickname(req.getUserId()).isPresent()) {
+        if (userRepository.findByNickname(req.getNickname()).isPresent()) {
             throw new ApiException(HttpStatus.CONFLICT, "409", "CONFLICT", "이미 존재하는 닉네임입니다.");
         }
-        // 비밀번호 암호화
-        String password = passwordEncoder.encode(req.getPassword());
+
+        Role role = Role.USER;
+        if(userRole.equals("ADMIN")){
+            role = Role.ADMIN;
+        } // ADMIN 으로 변환 후 저장
+
         // 회원 생성
-        User user = new User(req.getUserId(), password, req.getNickname());
+        User user = new User(loginId, req.getNickname(), role);
         userRepository.save(user);
     }
 
@@ -58,7 +63,7 @@ public class UserService {
      * 조히여서 ReadOnly = true 하고 싶지만.. 출석 체크 때문에 풀어둠
      */
     @Transactional
-    public UserResponseMe getUser(Long id) {
+    public UserResponseMe getUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않은 회원입니다."));
 
@@ -107,7 +112,7 @@ public class UserService {
      */
     @Transactional
     @CacheEvict(value = "allPlayers", allEntries = true)
-    public void updateNickname(Long Id, String newNickname) {
+    public void updateNickname(String Id, String newNickname) {
 
         if(badWordFiltering.check(newNickname)){
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "닉네임에 비속어가 포함되어있습니다.");

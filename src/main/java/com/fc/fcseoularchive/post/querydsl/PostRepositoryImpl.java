@@ -21,7 +21,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public boolean existsByUserIdAndGameId(Long userId, Long gameId) {
+    public boolean existsByUserIdAndGameId(String userId, Long gameId) {
         QPost post = QPost.post;
         QUser user = QUser.user;
         QGame game = QGame.game;
@@ -39,7 +39,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl {
     }
 
     @Override
-    public List<Post> findByUser_Id(Long userId) {
+    public List<Post> findByUser_Id(String userId) {
         QPost post = QPost.post;
         QUser user = QUser.user;
         QGame game = QGame.game;
@@ -54,7 +54,7 @@ public class PostRepositoryImpl implements PostRepositoryQueryDsl {
     }
 
     @Override
-    public List<Post> getPostAll(Long loginId) {
+    public List<Post> getPostAll(String loginId) {
         return jpaQueryFactory
                 .select(post)
                 .from(post)

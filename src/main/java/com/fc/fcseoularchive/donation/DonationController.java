@@ -28,7 +28,7 @@ public class DonationController {
     @Operation(summary = "선수에게 후원")
     @PostMapping("/{player_id}")
     public ResponseEntity<Void> createDonation(Authentication authentication, @PathVariable("player_id") Long playerId, Integer point) {
-        Long userId = currentUserProvider.getCurrentUserId(authentication);
+        String userId = currentUserProvider.getCurrentUserId(authentication);
         donationService.create(userId, playerId, point);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
