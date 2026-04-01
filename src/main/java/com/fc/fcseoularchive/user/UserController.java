@@ -20,24 +20,26 @@ public class UserController {
     private final UserService userService;
     private final CurrentUserProvider currentUserProvider;
 
-    @Operation(summary = "회원 가입")
+    @Operation(summary = "회원 가입 AccessToken + 닉네임으로 가입")
     @PostMapping("/join")
-    public ResponseEntity<Void> createUser(@RequestBody UserCreateRequest req) {
-        userService.createUser(req);
+    public ResponseEntity<Void> createUser(Authentication authentication, @RequestBody UserCreateRequest req) {
+        String loginId = currentUserProvider.getCurrentUserId(authentication);
+        String userRole = currentUserProvider.getCurrentRole(authentication);
+        userService.createUser(loginId, req, userRole);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "내 정보 조회 + 출석체크")
     @GetMapping("/me")
     public ResponseEntity<UserResponseMe> getUser(Authentication authentication) {
-        Long userId = currentUserProvider.getCurrentUserId(authentication);
+        String userId = currentUserProvider.getCurrentUserId(authentication);
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
     }
 
     @Operation(summary = "닉네임 변경")
     @PatchMapping("/nickname")
     public ResponseEntity<Void> nicknameUpdate(Authentication authentication, @RequestBody UpdateNicknameRequest req) {
-        Long userId = currentUserProvider.getCurrentUserId(authentication);
+        String userId = currentUserProvider.getCurrentUserId(authentication);
         userService.updateNickname(userId, req.getNickname());
         return  ResponseEntity.status(HttpStatus.OK).build();
     }

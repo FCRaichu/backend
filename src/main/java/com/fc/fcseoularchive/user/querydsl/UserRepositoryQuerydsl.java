@@ -10,7 +10,7 @@ public interface UserRepositoryQuerydsl {
 
     List<User> getUserAll();
 
-    Optional<User> getUser(String userId);
+    Optional<User> getUser(String id);
 
 }
 

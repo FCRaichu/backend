@@ -32,12 +32,12 @@ public class UserRepositoryImpl implements UserRepositoryQuerydsl {
 
 
     @Override
-    public Optional<User> getUser(String userId) {
+    public Optional<User> getUser(String id) {
         return Optional.ofNullable(
                 jpaQueryFactory
                         .select(user)
                         .from(user)
-                        .where(user.userId.eq(userId))
+                        .where(user.id.eq(id))
                         .fetchOne()
         );
     }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DonationRepository extends JpaRepository<Donation,Long> , DonationRepositoryQuerydsl {
+public interface DonationRepository extends JpaRepository<Donation,String> , DonationRepositoryQuerydsl {
 
     @Query("SELECT d" +
             " FROM Donation d" +
@@ -20,6 +20,6 @@ public interface DonationRepository extends JpaRepository<Donation,Long> , Donat
             " JOIN FETCH d.player p" +
             " WHERE u.id = :userId" +
             " AND p.id = :playerId")
-    public Optional<Donation> findByUserIdAndPlayerId(@Param("userId") Long userId, @Param("playerId") Long playerId);
+    public Optional<Donation> findByUserIdAndPlayerId(@Param("userId") String userId, @Param("playerId") Long playerId);
 
 }

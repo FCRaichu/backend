@@ -78,8 +78,8 @@ public class TestController {
     }
 
     @GetMapping("/auth_get")
-    public ResponseEntity<Long> getAuth(Authentication authentication) {
-        Long authId = currentUserProvider.getCurrentUserId(authentication);
+    public ResponseEntity<String> getAuth(Authentication authentication) {
+        String authId = currentUserProvider.getCurrentUserId(authentication);
         return ResponseEntity.status(HttpStatus.OK).body(authId);
     }
 

@@ -25,7 +25,7 @@ public class DonationService {
 
     @Transactional
     @CacheEvict(value = "allPlayers", allEntries = true)
-    public void create(Long userId, Long playerId, Integer point){
+    public void create(String userId, Long playerId, Integer point){
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "401", "UNAUTHORIZED", "존재하지 않은 아이디입니다."));

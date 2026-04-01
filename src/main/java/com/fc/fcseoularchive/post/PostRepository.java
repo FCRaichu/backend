@@ -22,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post,Long>, PostRepository
         JOIN FETCH p.user u
         WHERE p.id = :postId AND u.id = :loginId
 """)
-    Optional<Post> findByIdAndUserIdWithGame(@Param("postId") Long postId, @Param("loginId") Long loginId);
+    Optional<Post> findByIdAndUserIdWithGame(@Param("postId") Long postId, @Param("loginId") String loginId);
 
 
     // 직관왕 랭킹에 사용

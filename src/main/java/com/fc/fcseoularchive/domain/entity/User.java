@@ -17,21 +17,15 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "user_id", nullable = false, length = 50, unique = true)
-    private String userId;
-
-    @Column(nullable = false, length = 255)
-    private String password;
+    @Column(length = 36) // '_' 하이픈 포함 UUID 로 사용
+    private String id;
 
     @Column(nullable = false, length = 30, unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role = Role.USER;
+    private Role role; // default 값 지움 -> 무조건 User 들어옴
 
     @Column(nullable = false)
     private Integer points = 0;
@@ -55,11 +49,10 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder
-    public User(String userId, String password, String nickname) {
-        this.userId = userId;
-        this.password = password;
+    public User(String userId, String nickname, Role role) {
+        this.id = userId;
         this.nickname = nickname;
-        this.role = Role.USER;
+        this.role = role;
         this.points = 0;
         this.attendanceStreak = 0;
         this.profileImage = null;
@@ -73,9 +66,6 @@ public class User {
         this.createdAt = now;
         this.updatedAt = now;
 
-        if (this.role == null) {
-            this.role = Role.USER;
-        }
         if (this.points == null) {
             this.points = 0;
         }
