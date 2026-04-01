@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.error;
+package com.fc.fcseoularchive.config.error;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

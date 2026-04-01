@@ -1,6 +1,6 @@
 package com.fc.fcseoularchive.config;
 
-import com.fc.fcseoularchive.error.ApiException;
+import com.fc.fcseoularchive.config.error.ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;

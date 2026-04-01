@@ -1,4 +1,4 @@
-package com.fc.fcseoularchive.error.dto;
+package com.fc.fcseoularchive.config.error.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

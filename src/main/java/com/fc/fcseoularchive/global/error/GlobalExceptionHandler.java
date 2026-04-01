@@ -1,7 +1,7 @@
-package com.fc.fcseoularchive.error;
+package com.fc.fcseoularchive.config.error;
 
 
-import com.fc.fcseoularchive.error.dto.ErrorResponse;
+import com.fc.fcseoularchive.config.error.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
