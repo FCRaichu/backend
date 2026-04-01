@@ -115,7 +115,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://raichu.inwoohub.com", "https://fc-raichu.vercel.app"));
+        List<String> origins = new ArrayList<>();
+        origins.add("http://localhost:5173");
+        origins.add("https://raichu.inwoohub.com");
+        origins.add("https://fcraichu.inwoohub.com");
+        origins.add("https://fc-raichu.vercel.app");
+
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false);
