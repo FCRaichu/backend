@@ -29,7 +29,7 @@ public class SwaggerConfig {
                         .description("Todolist Application API Documentation")
                         .version("v1.0"))
 //                .addServersItem(new Server().url("http://localhost:8081")) //로컬 테스트
-//                .addServersItem(new Server().url("http://localhost:8080")) //로컬 테스트
+                .addServersItem(new Server().url("http://localhost:8080")) //로컬 테스트
                 .addServersItem(new Server().url("https://raichu.inwoohub.com"))
                 .addSecurityItem(securityRequirement)  // Security Requirement 추가
                 .schemaRequirement("BearerAuth", securityScheme);  // Security Scheme 추가

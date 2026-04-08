@@ -56,6 +56,19 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "caches,health,info"
+  endpoint:
+    caches:
+      enabled: true
+    health:
+      show-details: always
+
+
+
 
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
 #jwt:

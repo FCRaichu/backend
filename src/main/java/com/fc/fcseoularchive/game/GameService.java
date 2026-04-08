@@ -8,6 +8,7 @@ import com.fc.fcseoularchive.game.dto.GameResponse;
 import com.fc.fcseoularchive.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,63 +27,18 @@ public class GameService {
     private final GameRepository gameRepository;
     private final PostRepository postRepository;
 
-    // 경기 조회 (년, 월 필터링)
+
+    // 경기 조회 (년, 월 필터링 param 은 nullable) - 로그인 유저만 가능
     public List<GameResponse> getAllGames(Long loginId, Integer year, Integer month) {
-        List<Game> games;
-        if (year != null && month != null) {
-            games = gameRepository.findByYearOrderByDateAsc(year, month);
-        } else if (year == null && month == null) {
-            games = gameRepository.findAllByOrderByDateAsc();
-        } else {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "year 와 month 값이 필요합니다.");
-        }
-
-        return games.stream().map(game -> {
-            GameResponse response = new GameResponse();
-
-            response.setId(game.getId());
-            response.setDate(game.getDate());
-            response.setRound(game.getRound());
-            response.setHomeTeam(game.getHomeTeam());
-            response.setAwayTeam(game.getAwayTeam());
-            response.setStadium(game.getStadium());
-            response.setHomeScore(game.getHomeScore());
-            response.setAwayScore(game.getAwayScore());
-
-            // "isAttended" : true - 로그인 user 가 간 경기인지
-            // post db 의 game_id == game.getId 인 행에서 user_id == loginId 인지 판단
-            boolean existPost = postRepository.existsByUserIdAndGameId(loginId, game.getId());
-            response.setIsAttended(existPost);
-            // 상대팀 찾기 : 홈팀이 "FC서울" 이 아니면 awayTeam 이 opponent
-            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
-            response.setOpponent(opponent);
-
-            // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
-            response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
-
-            // 경기 결과가 null 이 아니면 String 으로 변환 해서 반환
-            response.setResult(game.getResult() != null ? game.getResult() : null);
-
-            return response;
-        }).collect(Collectors.toList());
-    }
-
-    // 경기 조회 (년, 월 필터링)
-    public List<GameResponse> getAllGamesV2(Long loginId, Integer year, Integer month) {
         // 경기를 전부 가져올건데 -> 유저가 직관했다면 True 담아주고 아니라면, false 담아주는 로직
 
-        // 1. 경기 일단 다 가져옴 (왜? true, false 할거임)
+        // 경기 일단 다 가져옴 - getAll 메서드는 year, month 동적 쿼리로 null 처리 가능
         List<Game> gameAll = gameRepository.getAll(year, month);
 
-        // 2. 이제 post 가져올건데 이때 패치조인으로 경기랑, 유저까지 다 담아올거야
-        List<Post> postAll = null;
-        if(loginId == null){
-            postAll = postRepository.findAll();
-        }else{
-            postAll = postRepository.getPostAll(loginId);
-        }
+        // post 가져올건데 이때 패치조인으로 경기랑, 유저까지 다 담아옴
+        List<Post> postAll = postRepository.getPostAll(loginId);;
 
-        // 3. game.id 가 키가되고, 그 안에 value 는 List<Post> 가 있다.
+        // game.id 가 키가되고, 그 안에 value 는 List<Post> 가 있다.
         Map<Long, List<Post>> postMap = postAll.stream()
                 .collect(Collectors.groupingBy(post -> post.getGame().getId()));
 
@@ -113,20 +69,16 @@ public class GameService {
                 .toList();
     }
 
+    // 경기 조회 (년, 월 필터링) - 비로그인 가능
     @Cacheable(value = "guestGames", key = "#year + '-' + #month")
-    public List<GameResponse> getAllGamesV2ForGuest(Long loginId, Integer year, Integer month) {
+    public List<GameResponse> getAllGamesForGuest(Long loginId, Integer year, Integer month) {
 
         List<Game> gameAll = gameRepository.getAll(year, month);
 
-        // 2. 이제 post 가져올건데 이때 패치조인으로 경기랑, 유저까지 다 담아올거야
-        List<Post> postAll = null;
-        if(loginId == null){
-            postAll = postRepository.findAll();
-        }else{
-            postAll = postRepository.getPostAll(loginId);
-        }
+        // post 만 가져옴 - guest 이므로 직관 여부 필요 없다
+        List<Post> postAll = postRepository.findAll();;
 
-        // 3. game.id 가 키가되고, 그 안에 value 는 List<Post> 가 있다.
+        // game.id 가 키가되고, 그 안에 value 는 List<Post> 가 있다.
         Map<Long, List<Post>> postMap = postAll.stream()
                 .collect(Collectors.groupingBy(post -> post.getGame().getId()));
 
@@ -158,40 +110,8 @@ public class GameService {
     }
 
 
-    /*// Guest용 특정 연도, 달 경기 정보 조회 ttl 1시간
-    @Cacheable(value = "guestGames", key = "#year + '-' + #month")
-    public List<GameResponse> getAllGamesForGuestByYear(int year, int month) {
-        List<Game> games = gameRepository.findByYearOrderByDateAsc(year, month);
-
-        return games.stream().map(game -> {
-            GameResponse response = new GameResponse();
-
-            response.setId(game.getId());
-            response.setDate(game.getDate());
-            response.setRound(game.getRound());
-            response.setHomeTeam(game.getHomeTeam());
-            response.setAwayTeam(game.getAwayTeam());
-            response.setStadium(game.getStadium());
-            response.setHomeScore(game.getHomeScore());
-            response.setAwayScore(game.getAwayScore());
-
-            response.setIsAttended(false);
-
-            // 상대팀 찾기 : 홈팀이 "FC서울" 이 아니면 awayTeam 이 opponent
-            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
-            response.setOpponent(opponent);
-
-            // 경기 결과 (W, D, L) 가 null 이면 "경기 전"
-            response.setStatus(game.getResult() == null ? "SCHEDULED" : "FINISHED");
-
-            // 경기 결과가 null 이 아니면 String 으로 변환 해서 반환
-            response.setResult(game.getResult() != null ? game.getResult() : null);
-
-            return response;
-        }).collect(Collectors.toList());
-    }*/
-
-    public GameResponse getGameByUser(Long loginId, Long gameId) {
+    // id로 game 단건 조회
+    public GameResponse getGameById(Long loginId, Long gameId) {
 
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
@@ -223,6 +143,7 @@ public class GameService {
 
     // admin : 경기 추가
     @Transactional
+    @CacheEvict(value = "guestGames", allEntries = true)
     public void addGame(GameAdminRequest request) {
         Game game = Game.builder()
                 .date(request.getDate())
@@ -249,6 +170,7 @@ public class GameService {
 
     // admin : 경기 1개 정보 수정 (모든 필드 제어 가능)
     @Transactional
+    @CacheEvict(value = "guestGames", allEntries = true)
     public Game updateGame(Long gameId, GameAdminRequest request) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
@@ -271,6 +193,7 @@ public class GameService {
 
     // admin : 경기 삭제
     @Transactional
+    @CacheEvict(value = "guestGames", allEntries = true)
     public void deleteGame(Long gameId) {
         gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "경기가 존재하지 않습니다."));
