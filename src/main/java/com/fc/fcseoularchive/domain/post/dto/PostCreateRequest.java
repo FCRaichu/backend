@@ -14,7 +14,7 @@ public class PostCreateRequest {
     private Long gameId;
 
     @NotNull
-    private Long userId; // User 테이블의 id(PK)
+    private String userId; // User 테이블의 id(PK)
 
     @NotNull
     private String title;
