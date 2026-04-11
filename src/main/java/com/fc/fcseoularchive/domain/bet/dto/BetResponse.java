@@ -24,4 +24,8 @@ public class BetResponse {
     private Long winPoint;
     private Long drawPoint;
     private Long losePoint;
+
+    private Long myWinPoint; // 내가 win 에 건 전체 포인트
+    private Long myDrawPoint;
+    private Long myLosePoint;
 }

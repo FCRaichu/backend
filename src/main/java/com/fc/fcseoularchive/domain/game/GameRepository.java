@@ -24,5 +24,6 @@ public interface GameRepository extends JpaRepository<Game, Long>, GameRepositor
     // now 보다 큰 날짜의 경기 1개 리턴
     Optional<Game> findFirstByDateAfterOrderByDateAsc(LocalDateTime now);
 
+    List<Game> findByDateBeforeOrderByDateDesc(LocalDateTime now);
 
 }

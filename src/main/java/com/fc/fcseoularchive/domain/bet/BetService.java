@@ -1,6 +1,7 @@
 package com.fc.fcseoularchive.domain.bet;
 
 import com.fc.fcseoularchive.domain.bet.dto.BetCreateRequest;
+import com.fc.fcseoularchive.domain.bet.dto.BetHistoryResponse;
 import com.fc.fcseoularchive.domain.bet.dto.BetResponse;
 import com.fc.fcseoularchive.domain.bet.dto.BetSummaryResponse;
 import com.fc.fcseoularchive.domain.game.Game;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,43 +58,52 @@ public class BetService {
 
     }
 
+    //
     public BetResponse getBet(String loginId) {
 
         //LocalDateTime now = LocalDateTime.now();
-        LocalDateTime now = LocalDateTime.of(2026, 3, 17, 13, 0, 0); // 베팅 gameId=3 테스트용
-        //LocalDateTime now = LocalDateTime.of(2028, 3, 17, 13, 0, 0); // 베팅 경기 없는 테스트용
+        //LocalDateTime now = LocalDateTime.of(2026, 3, 17, 13, 0, 0); // 베팅 gameId=3 테스트용
+        LocalDateTime now = LocalDateTime.of(2028, 3, 17, 13, 0, 0); // 베팅 경기 없는 테스트용
 
         BetResponse response = new BetResponse();
 
         response.setUserId(loginId);
 
-        // 현재 시각으로 현재 베팅중인 경기 구하기
-        // 현재시각 < 경기 시각 을 만족하는 경기 중 가장 날짜가 작은 경기 구하기
+        // 현재 시각 -> 현재 베팅 중인 경기 구하기
+        // 현재 시각 < 경기 시각  만족 하는 경기 중, 가장 날짜가 작은 경기 구하기 : 가장 가까운 미래의 경기
         Game game = gameRepository.findFirstByDateAfterOrderByDateAsc(now)
                 .orElse(null);
 
-        if (game == null) return response; // bet 중인 경기가 없으면 유저 아이디만 반환, 나머지는 null 이나 기본값
+        // bet 중인 경기가 없으면 유저 아이디만 반환, 나머지는 null 이나 기본값
+        if (game == null) return response;
 
         // gameId가 있으니 bet 에서 포인트 정보, games 에서 opponent, date 가져오기
-
         Bet bet = betRepository.findByGame_Id(game.getId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "경기에 대응하는 베팅 정보가 DB에 존재하지 않습니다."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다."));
 
-
-        String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
+        // 내가 베팅한 포인트 구하기
+        BetHistory betHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 유저와 경기에 대한 bet_history가  존재하지 않습니다."));
 
         response.setBetId(bet.getId());
         response.setGameId(game.getId());
+
+        // from game db
         response.setGameDate(game.getDate());
+        String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
         response.setOpponent(opponent);
 
+        // from bet db
         response.setTotalBettors(bet.getBettors());
         response.setTotalPoint(bet.getTotalPoint());
         response.setWinPoint(bet.getWinPoint());
         response.setDrawPoint(bet.getDrawPoint());
         response.setLosePoint(bet.getLosePoint());
 
-
+        // from bet_history db
+        response.setMyWinPoint(betHistory.getWinPoint());
+        response.setMyDrawPoint(betHistory.getDrawPoint());
+        response.setMyLosePoint(betHistory.getLosePoint());
 
         return response;
     }
@@ -106,15 +117,14 @@ public class BetService {
 
         // 애초에 베팅중인 경기가 없으면 베팅이 불가능
         Game game = gameRepository.findFirstByDateAfterOrderByDateAsc(now)
-                .orElseThrow(() ->new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "베팅 진행중인 게임이 없는데 베팅할 수 없습니다."));
+                .orElseThrow(() ->new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "베팅 진행중인 게임이 없으므로 베팅할 수 없습니다."));
 
         // 프론트에서 준 게임 id가 현재 베팅중인 게임이 아니면 throw
         if (!Objects.equals(game.getId(), request.getGameId())) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "요청된 게임 id에 해당되는 진행중인 베팅이 없습니다.");
+            throw new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "요청된 게임 id와 진행중인 베팅id가 일치하지 않습니다..");
         }
 
         // loginId , gameId 로 된 bet_history 없으면 생성, 있으면 수정
-
         Optional<BetHistory> optBetHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId());
 
         boolean isNewBettor = false; // 처음 해당 경기에 베팅 시작했는지
@@ -140,11 +150,72 @@ public class BetService {
         }
 
         // bet_history 생성했으면 addBetting 마지막 param 에 true 주고 bet 업데이트
-
         Bet bet = betRepository.findByGame_Id(game.getId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "경기 id에 해당하는 bet DB 정보가 없습니다"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다."));
 
         bet.addBetting(winPoint, drawPoint, losePoint, isNewBettor);
+
+    }
+
+    // todo N+1 해결 필요
+    // 경기 1번 + (bet N번 + history N번) 호출
+    public List<BetHistoryResponse> getBetHistory(String loginId) {
+        // 현재 시간보다 앞서는 모든 경기를 최신순으로 가져오기
+
+        //LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2026, 3, 17, 13, 0, 0); // 베팅 gameId=3 테스트용
+        //LocalDateTime now = LocalDateTime.of(2028, 3, 17, 13, 0, 0); // 베팅 경기 없는 테스트용
+
+        // 경기 시각 < 현재 시각 만족 하는 모든 경기를 최신 순으로 가져오기
+        List<Game> games = gameRepository.findByDateBeforeOrderByDateDesc(now);
+
+        List<BetHistoryResponse> responses = new ArrayList<>();
+
+        for (Game game: games) {
+            Optional<Bet> optBet = betRepository.findByGame_Id(game.getId());
+            // 경기에 대한 bet 테이블이 없으면 db 오류 -> throw
+            if (optBet.isEmpty()) {
+                throw new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다.");
+            }
+
+            Bet bet = optBet.get();
+
+            // 유저가 경기에 베팅 했는지
+            Optional<BetHistory> optBetHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId());
+            if (optBetHistory.isEmpty()) {
+                // 베팅 안했으면 continue
+                continue;
+            }
+            BetHistory betHistory = optBetHistory.get();
+
+            BetHistoryResponse response = new BetHistoryResponse();
+
+            // 기본 정보
+            response.setBetId(bet.getId());
+            response.setGameId(game.getId());
+
+            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
+            response.setOpponent(opponent);
+            response.setGameDate(game.getDate());
+            response.setGameResult(game.getResult());
+
+            // bet 집계 정보
+            response.setTotalBettors(bet.getBettors());
+            response.setTotalPoint(bet.getTotalPoint());
+            response.setWinPoint(bet.getWinPoint());
+            response.setDrawPoint(bet.getDrawPoint());
+            response.setLosePoint(bet.getLosePoint());
+
+            // 내 betHistory 정보
+            response.setPayoutPoint(betHistory.getPayoutPoint());
+
+            // 반환 리스트에 추가
+            responses.add(response);
+
+        }
+
+        return responses;
+
 
     }
 }

@@ -1,6 +1,7 @@
 package com.fc.fcseoularchive.domain.bet;
 
 import com.fc.fcseoularchive.domain.bet.dto.BetCreateRequest;
+import com.fc.fcseoularchive.domain.bet.dto.BetHistoryResponse;
 import com.fc.fcseoularchive.domain.bet.dto.BetResponse;
 import com.fc.fcseoularchive.domain.bet.dto.BetSummaryResponse;
 import com.fc.fcseoularchive.security.CurrentUserProvider;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "7. BetController")
 @RestController
@@ -54,5 +57,15 @@ public class BetController {
         betService.createBet(loginId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "이전 베팅 기록들")
+    @GetMapping("/history")
+    public ResponseEntity<List<BetHistoryResponse>> getBetHistory(Authentication authentication) {
+
+        String loginId = currentUserProvider.getCurrentUserId(authentication);
+        List<BetHistoryResponse> response = betService.getBetHistory(loginId);
+
+        return ResponseEntity.ok(response);
     }
 }
