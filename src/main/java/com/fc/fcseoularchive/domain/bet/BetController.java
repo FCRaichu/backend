@@ -44,7 +44,7 @@ public class BetController {
 
     @Operation(summary = "베팅 하기")
     @PostMapping
-    public ResponseEntity<Void> createBet(Authentication authentication, @Valid BetCreateRequest request) {
+    public ResponseEntity<Void> createBet(Authentication authentication, @Valid @RequestBody BetCreateRequest request) {
 
         String loginId = currentUserProvider.getCurrentUserId(authentication);
         betService.createBet(loginId, request);

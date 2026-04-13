@@ -1,10 +1,12 @@
 package com.fc.fcseoularchive.domain.bet.querydsl;
 
+import com.fc.fcseoularchive.domain.bet.BetHistory;
 import com.fc.fcseoularchive.domain.bet.QBet;
 import com.fc.fcseoularchive.domain.bet.QBetHistory;
 import com.fc.fcseoularchive.domain.bet.dto.BetHistoryResponse;
 import com.fc.fcseoularchive.domain.bet.dto.UnreadBetResultResponse;
 import com.fc.fcseoularchive.domain.game.QGame;
+import com.fc.fcseoularchive.domain.user.QUser;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -76,12 +78,25 @@ public class BetHistoryRepositoryImpl implements BetHistoryRepositoryQuerydsl{
                 ))
                 .from(betHistory)
                 .join(betHistory.game, game)
-                .join(bet).on(bet.game.id.eq(game.id))
+                .leftJoin(bet).on(bet.game.id.eq(game.id))
                 .where(
                         betHistory.user.id.eq(loginId),
                         game.date.before(now)
                 )
                 .orderBy(game.date.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<BetHistory> findAllByGame_IdAndFetchUser(Long gameId) {
+        QBetHistory betHistory = QBetHistory.betHistory;
+        QUser user = QUser.user;
+
+        return jpaqueryFactory
+                .select(betHistory)
+                .from(betHistory)
+                .join(betHistory.user, user).fetchJoin()
+                .where(betHistory.game.id.eq(gameId))
                 .fetch();
     }
 }

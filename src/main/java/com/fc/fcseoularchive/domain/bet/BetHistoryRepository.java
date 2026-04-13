@@ -13,5 +13,4 @@ public interface BetHistoryRepository extends JpaRepository<BetHistory, Long>, B
 
     Optional<BetHistory> findByUser_IdAndGame_Id(String loginId, Long gameId);
 
-    List<BetHistory> findByUser_IdAndIsSettledTrueAndIsCheckedFalse(String loginId);
 }

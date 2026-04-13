@@ -37,6 +37,7 @@ public class AdminController {
     private final GameService gameService;
     private final PlayerService playerService;
     private final BetService betService;
+    private final AdminService adminService;
 
     @Operation(summary = "회원 전체 조회")
     @GetMapping("/users")
@@ -114,15 +115,10 @@ public class AdminController {
 
     // 추가예정
 
-    @Operation(summary = "경기 결과 입력하고 바로 베팅 정산 적용")
+    @Operation(summary = "경기 결과 입력하고 바로 베팅 정산 적용, 해당 경기에 대해 정산을 완료한 유저가 한 명이라도 있으면 THROW")
     @PutMapping("/bet/settle/{gameId}")
     public ResponseEntity<Void> updateGameAndSettle(@PathVariable Long gameId, @RequestBody GameAdminResultRequest request) {
-        // 경기 결과 입력
-        gameService.updateGameResult(gameId, request);
-
-        // todo betHistory 수정
-        betService.settleAllBet(gameId);
-
+        adminService.updateGameAndSettle(gameId, request);
 
         return ResponseEntity.noContent().build();
     }
