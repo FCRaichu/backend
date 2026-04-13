@@ -63,7 +63,7 @@ public class BetController {
     }
 
     @Operation(summary = "확인하지 않은 베팅 정산 결과 - 로그인 후 호출")
-    @GetMapping("unread")
+    @GetMapping("/unread")
     public ResponseEntity<List<UnreadBetResultResponse>> getUnreadBetResult(Authentication authentication) {
 
         String loginId = currentUserProvider.getCurrentUserId(authentication);

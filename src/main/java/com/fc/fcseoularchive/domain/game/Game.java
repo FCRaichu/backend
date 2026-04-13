@@ -105,4 +105,13 @@ public class Game {
         this.deletedAt = deletedAt;
         this.updatedAt = LocalDateTime.now();
     }
+
+    // admin : 게임 정보 update for bet settle
+    public void adminUpdateForBet(Integer homeScore, Integer awayScore, GameResult result) {
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
+        this.result = result;
+    }
+
+
 }

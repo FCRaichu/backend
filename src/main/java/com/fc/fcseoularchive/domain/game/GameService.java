@@ -1,5 +1,6 @@
 package com.fc.fcseoularchive.domain.game;
 
+import com.fc.fcseoularchive.domain.game.dto.GameAdminResultRequest;
 import com.fc.fcseoularchive.domain.post.Post;
 import com.fc.fcseoularchive.global.error.ApiException;
 import com.fc.fcseoularchive.domain.game.dto.GameAdminRequest;
@@ -188,6 +189,24 @@ public class GameService {
         );
 
         return gameRepository.save(game);
+    }
+
+    // admin : 경기 1개 정보 수정 (점수, 승패 유무 필드만)
+    @Transactional
+    public void updateGameResult(Long gameId, GameAdminResultRequest request) {
+        // 특정 필드만 수정
+
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
+
+        // 모든 필드 업데이트
+        game.adminUpdateForBet(
+                request.getHomeScore(),
+                request.getAwayScore(),
+                request.getResult()
+        );
+
+        gameRepository.save(game);
     }
 
     // admin : 경기 삭제

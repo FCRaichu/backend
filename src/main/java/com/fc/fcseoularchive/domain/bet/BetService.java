@@ -55,7 +55,7 @@ public class BetService {
 
     }
 
-    //
+    // 현재 베팅중인 경기 정보
     public BetResponse getBet(String loginId) {
 
         //LocalDateTime now = LocalDateTime.now();
@@ -78,10 +78,6 @@ public class BetService {
         Bet bet = betRepository.findByGame_Id(game.getId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다."));
 
-        // 내가 베팅한 포인트 구하기
-        BetHistory betHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 유저와 경기에 대한 bet_history가  존재하지 않습니다."));
-
         response.setBetId(bet.getId());
         response.setGameId(game.getId());
 
@@ -97,10 +93,17 @@ public class BetService {
         response.setDrawPoint(bet.getDrawPoint());
         response.setLosePoint(bet.getLosePoint());
 
-        // from bet_history db
-        response.setMyWinPoint(betHistory.getWinPoint());
-        response.setMyDrawPoint(betHistory.getDrawPoint());
-        response.setMyLosePoint(betHistory.getLosePoint());
+        Optional<BetHistory> optBetHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId());
+        if (optBetHistory.isPresent()) {
+            BetHistory betHistory = optBetHistory.get();
+            response.setMyWinPoint(betHistory.getWinPoint());
+            response.setMyDrawPoint(betHistory.getDrawPoint());
+            response.setMyLosePoint(betHistory.getLosePoint());
+        } else {
+            response.setMyWinPoint(0L);
+            response.setMyDrawPoint(0L);
+            response.setMyLosePoint(0L);
+        }
 
         return response;
     }
@@ -154,68 +157,18 @@ public class BetService {
 
     }
 
-    // todo N+1 해결 필요
-    // 경기 1번 + (bet N번 + history N번) 호출
+    // 과거 경기 기준 내 베팅 이력 조회
+    // DTO projection
     public List<BetHistoryResponse> getBetHistory(String loginId) {
-        // 현재 시간보다 앞서는 모든 경기를 최신순으로 가져오기
-
         //LocalDateTime now = LocalDateTime.now();
         LocalDateTime now = LocalDateTime.of(2026, 3, 17, 13, 0, 0); // 베팅 gameId=3 테스트용
         //LocalDateTime now = LocalDateTime.of(2028, 3, 17, 13, 0, 0); // 베팅 경기 없는 테스트용
 
-        // 경기 시각 < 현재 시각 만족 하는 모든 경기를 최신 순으로 가져오기
-        List<Game> games = gameRepository.findByDateBeforeOrderByDateDesc(now);
-
-        List<BetHistoryResponse> responses = new ArrayList<>();
-
-        for (Game game: games) {
-            Optional<Bet> optBet = betRepository.findByGame_Id(game.getId());
-            // 경기에 대한 bet 테이블이 없으면 db 오류 -> throw
-            if (optBet.isEmpty()) {
-                throw new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다.");
-            }
-
-            Bet bet = optBet.get();
-
-            // 유저가 경기에 베팅 했는지
-            Optional<BetHistory> optBetHistory = betHistoryRepository.findByUser_IdAndGame_Id(loginId, game.getId());
-            if (optBetHistory.isEmpty()) {
-                // 베팅 안했으면 continue
-                continue;
-            }
-            BetHistory betHistory = optBetHistory.get();
-
-            BetHistoryResponse response = new BetHistoryResponse();
-
-            // 기본 정보
-            response.setBetId(bet.getId());
-            response.setBetHistoryId(betHistory.getId());
-            response.setGameId(game.getId());
-
-            String opponent = game.getHomeTeam().equals("FC서울") ? game.getAwayTeam() : game.getHomeTeam();
-            response.setOpponent(opponent);
-            response.setGameDate(game.getDate());
-            response.setGameResult(game.getResult());
-
-            // bet 집계 정보
-            response.setTotalBettors(bet.getBettors());
-            response.setTotalPoint(bet.getTotalPoint());
-            response.setWinPoint(bet.getWinPoint());
-            response.setDrawPoint(bet.getDrawPoint());
-            response.setLosePoint(bet.getLosePoint());
-
-            // 내 betHistory 정보
-            response.setPayoutPoint(betHistory.getPayoutPoint());
-
-            // 반환 리스트에 추가
-            responses.add(response);
-
-        }
-
-        return responses;
+        return betHistoryRepository.getBetHistory(loginId, now);
     }
 
     // 정산 완료지만, 확인하지 않은 배팅 내역 반환
+    // DTO projection
     public List<UnreadBetResultResponse> getUnreadBetResult(String loginId) {
         return betHistoryRepository.getUnreadBetResults(loginId);
     }
@@ -245,5 +198,10 @@ public class BetService {
                 betHistory.markAsChecked();
             }
         }
+    }
+
+    @Transactional
+    public void settleAllBet(Long gameId) {
+        // 베팅 정산
     }
 }
