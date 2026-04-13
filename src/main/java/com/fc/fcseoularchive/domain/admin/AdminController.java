@@ -1,8 +1,11 @@
 package com.fc.fcseoularchive.domain.admin;
 
+import com.fc.fcseoularchive.domain.bet.BetService;
 import com.fc.fcseoularchive.domain.game.Game;
+import com.fc.fcseoularchive.domain.game.GameRepository;
 import com.fc.fcseoularchive.domain.game.dto.GameAdminRequest;
 import com.fc.fcseoularchive.domain.game.GameService;
+import com.fc.fcseoularchive.domain.game.dto.GameAdminResultRequest;
 import com.fc.fcseoularchive.domain.player.PlayerService;
 import com.fc.fcseoularchive.domain.player.dto.CreatePlayerRequest;
 import com.fc.fcseoularchive.domain.player.dto.UpdatePlayerReqeust;
@@ -17,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -32,6 +36,8 @@ public class AdminController {
     private final PostService postService;
     private final GameService gameService;
     private final PlayerService playerService;
+    private final BetService betService;
+    private final AdminService adminService;
 
     @Operation(summary = "회원 전체 조회")
     @GetMapping("/users")
@@ -108,5 +114,13 @@ public class AdminController {
     }
 
     // 추가예정
+
+    @Operation(summary = "경기 결과 입력하고 바로 베팅 정산 적용, 해당 경기에 대해 정산을 완료한 유저가 한 명이라도 있으면 THROW")
+    @PutMapping("/bet/settle/{gameId}")
+    public ResponseEntity<Void> updateGameAndSettle(@PathVariable Long gameId, @RequestBody GameAdminResultRequest request) {
+        adminService.updateGameAndSettle(gameId, request);
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
