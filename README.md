@@ -22,6 +22,9 @@
 
 </br>
 
+## 2. 프로젝트 아키텍쳐
+<!-- 아키텍쳐 사진 -->
+
 ## 2. 개발 전략
 
 ### 공통 (Frontend + Backend)
@@ -127,17 +130,23 @@ src/main/java/com/fc/fcseoularchive
 
 ## 8. 프로젝트 후기
 
-### 김예은
+<details><summary>김예은
+</summary>
 
-> "!"
+으아아아아
+</details>
 
-### 강상민
+<details><summary>강상민
+</summary>
 
-> "!!"
+으아아아아
+</details>
 
-### 황인우
+<details><summary>황인우
+</summary>
 
-> "!!!"
+으아아아아
+</details>
 
-<br/>
+
 
