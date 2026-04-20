@@ -58,7 +58,7 @@ public class ImageCompressionService {
 
     private byte[] convertToWebp(byte[] imageBytes) throws IOException, InterruptedException {
         ProcessBuilder pb = new ProcessBuilder(
-                "cwebp",
+                "webp",
                 "-q", "85",
                 "-alpha_q", "100",
                 "-m", "4",
