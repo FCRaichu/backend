@@ -16,4 +16,7 @@ public class TokenResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
+    @JsonProperty("id_token")
+    private String idToken; // 로그아웃시 필요한 idToken
+
 }

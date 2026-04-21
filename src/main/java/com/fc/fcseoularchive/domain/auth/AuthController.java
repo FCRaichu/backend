@@ -63,4 +63,15 @@ public class AuthController {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "401", "잘못된 JWT 입니다." );
         }
     }
+
+    @Operation(summary = "로그아웃 API, 헤더로 AccessToken")
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken){
+        String accessToken = bearerToken.replace("Bearer ", "");
+        String userId = parseUserIdFromExpiredJwt(accessToken);
+        String logoutUrl = authService.logout(accessToken, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(logoutUrl);
+    }
+
+
 }

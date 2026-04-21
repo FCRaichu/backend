@@ -78,10 +78,13 @@ keycloak:
   realm: fcraichu
   client-id: react
   client-secret: kAykNzrjgNyRR3tPtCoTmzthOAAGlQhh
+  logout-uri: /realms/fcraichu/protocol/openid-connect/logout
+
 
 
 frontend:
   redirect-uri: http://localhost:5173/login
+  redirect-uri-logout: http://localhost:5173/
 
 
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
