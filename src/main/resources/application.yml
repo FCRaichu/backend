@@ -77,7 +77,7 @@ keycloak:
   url: https://fcraichu.inwoohub.com/auth
   realm: fcraichu
   client-id: react
-  client-secret: kAykNzrjgNyRR3tPtCoTmzthOAAGlQhh
+  client-secret: j8VzAEJ8PPXi5Wjt4rEwweU95lkRZbvW
 
 
 frontend:
