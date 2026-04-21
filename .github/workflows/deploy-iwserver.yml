@@ -30,6 +30,6 @@ jobs:
           username: inwoo
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/teamproject
+            cd ~/docker/main
             docker compose pull fc-api
             docker compose up -d --no-deps fc-api
