@@ -8,7 +8,6 @@ import com.fc.fcseoularchive.domain.auth.dto.TokenResponse;
 import com.fc.fcseoularchive.global.error.ApiException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class AuthController {
     // 프론트 Callback.tsx에서 호출
     @Operation(summary = "콜백 API , 프론트 -> 서버로 인가코드, Verifier 보내주면 AccessToken 발급")
     @PostMapping("/callback")
-    public ResponseEntity<AccessTokenResponse> callback(@RequestBody CallbackRequest request, HttpServletResponse response) {
+    public ResponseEntity<AccessTokenResponse> callback(@RequestBody CallbackRequest request) {
         TokenResponse token = authService.exchangeCodeForToken(
                 request.getCode(),
                 request.getCodeVerifier()
@@ -64,14 +63,13 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "로그아웃 API, 헤더로 AccessToken")
+    @Operation(summary = "로그아웃 API, 헤더로 AccessToken, 401 에러 시 프론트에서 로그아웃 처리")
     @GetMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken){
         String accessToken = bearerToken.replace("Bearer ", "");
         String userId = parseUserIdFromExpiredJwt(accessToken);
-        String logoutUrl = authService.logout(accessToken, userId);
+        String logoutUrl = authService.logout(userId);
         return ResponseEntity.status(HttpStatus.OK).body(logoutUrl);
     }
-
 
 }

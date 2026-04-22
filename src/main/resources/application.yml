@@ -78,6 +78,7 @@ keycloak:
   realm: fcraichu
   client-id: react
   client-secret: j8VzAEJ8PPXi5Wjt4rEwweU95lkRZbvW
+  logout-uri: /realms/fcraichu/protocol/openid-connect/logout
 
 
 frontend:

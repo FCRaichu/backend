@@ -120,7 +120,7 @@ public class AuthService {
     }
 
     // 로그아웃 처리
-    public String logout(String accessToken, String userId) {
+    public String logout(String userId) {
 
         // 캐시에서 리프레시 토큰 가져오기
         TokenValues tokenValues = tokenCacheService.getRefreshToken(userId);
