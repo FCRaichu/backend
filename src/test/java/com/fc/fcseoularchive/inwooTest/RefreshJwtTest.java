@@ -1,0 +1,30 @@
+package com.fc.fcseoularchive.inwooTest;
+
+import com.fc.fcseoularchive.domain.auth.AuthService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+public class RefreshJwtTest {
+
+    @Autowired
+    private AuthService authService;
+
+    @Test
+    @DisplayName("만료된 jwt 에서 userId 만 뽑아오기")
+    public void test1() throws Exception{
+    
+        String jwt = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiU0pBR0wzd2NDWTI5RzR6bG5rUHhWYlFXb25fbDNXekx5bks2eVQzVU0wIn0.eyJleHAiOjE3NzcxOTE4ODcsImlhdCI6MTc3NzE5MTgyNywiYXV0aF90aW1lIjoxNzc3MTkxODI2LCJqdGkiOiJvbnJ0YWM6ODM4NzRlMDUtMTJlMS1jNzNiLWU5MDgtNTljMmUwNTJmMWZiIiwiaXNzIjoiaHR0cHM6Ly9mY3JhaWNodS5pbndvb2h1Yi5jb20vYXV0aC9yZWFsbXMvZmNyYWljaHUiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNjAxYmYwZjktZjk1Mi00MTg4LTkwZTYtNzhhNWU2NDcwZGE3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoicmVhY3QiLCJzaWQiOiJvcUlsYU9IaUMxMjJIZm81aW1RUl9pUEwiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtZmNyYWljaHUiLCJBRE1JTiIsIlVTRVIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJyb2xlIjpbImRlZmF1bHQtcm9sZXMtZmNyYWljaHUiLCJBRE1JTiIsIlVTRVIiXSwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGxzZG5kbHNAbmF2ZXIuY29tIiwiaWQiOiI2MDFiZjBmOS1mOTUyLTQxODgtOTBlNi03OGE1ZTY0NzBkYTciLCJsb2NhbGUiOiJrbyIsImVtYWlsIjoiZGxzZG5kbHNAbmF2ZXIuY29tIn0.Rmjkx-dUiG2lDrehER_ewwnb0eLeN5AWQSydwQN_13S0LjAm9I0Bk9efwf4EJrqBOe8oSaFy22uU5i-KlzBEMVlOH_OYg4b3Q9_BagJPLYDrgbScxjWknwgJw85r-RzKJUZbNyYZMDXHNXqEi5euBNXTla0KORflZaolpKjC1N4VmXHVHR51J-iOLD0-ePTrvz5K7H3E_YHLsjwVLPpgizwRiV4xJsxvOZ1Uxytu3dv20rKHVxpWzzDyx6tP63-J9J4FyUHVpVyM9q5hh_tj631IO1KTi0y9Az-JLHj8pMUB2IJTQjvMnb60fIeGNeoZo3mD6WWEPs6ssCI3jsl3PA";
+
+        String userId = authService.parseUserIdFromJwt(jwt);
+
+        System.out.println("userId = " + userId);
+
+
+
+    }
+
+
+}

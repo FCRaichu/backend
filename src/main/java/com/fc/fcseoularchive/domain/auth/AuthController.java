@@ -38,13 +38,15 @@ public class AuthController {
     // 프론트 인터셉터에서 401 시 자동 호출
     @Operation(summary = "refreshToken API AccessToken 만 헤더로 보내주면 됨")
     @PostMapping("/refresh")
-    public ResponseEntity<AccessTokenResponse> refresh(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<AccessTokenResponse> refresh(@RequestHeader("X-Expired-AccessToken") String bearerToken) {
 
         // 만료된 access_token에서 userId 추출
         String expiredToken = bearerToken.replace("Bearer ", "");
         String userId = parseUserIdFromExpiredJwt(expiredToken);
 
         TokenResponse token = authService.refreshToken(userId);
+
+        System.out.println("발급된 토큰: " + token.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(new AccessTokenResponse(token.getAccessToken()));
     }
@@ -57,7 +59,7 @@ public class AuthController {
         String decoded = new String(Base64.getUrlDecoder().decode(payload));
         try {
             JsonNode node = new ObjectMapper().readTree(decoded);
-            return node.get("sub").asText();
+            return node.get("id").asText();
         } catch (Exception e) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "401", "잘못된 JWT 입니다." );
         }

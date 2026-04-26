@@ -80,6 +80,7 @@ public class AuthService {
         ));
 
         saveRefreshToken(token);
+
         return token;
     }
 
@@ -107,7 +108,7 @@ public class AuthService {
 
     // jwt 에서 유저의 id 파싱 하기
     // ex) "sub": "dae19fe0-e5e7-43ac-a492-e1eb395c2662" // 키클락에서 uuid 로 저장함
-    private String parseUserIdFromJwt(String jwt) {
+    public String parseUserIdFromJwt(String jwt) {
         String payload = jwt.split("\\.")[1];
         String decoded = new String(Base64.getUrlDecoder().decode(payload));
         try {

@@ -1,5 +1,8 @@
 package com.fc.fcseoularchive.config;
 
+import com.fc.fcseoularchive.global.error.ApiException;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.core.convert.converter.Converter;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +106,27 @@ public class SecurityConfig {
         /** OAuth2 리소스 서버 설정 및 토큰에서 ROLE 꺼내오기 */
         httpSecurity
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
+                        .authenticationEntryPoint(((request, response, authException) -> {
+                                    if (request.getRequestURI().startsWith("/api/auth/refresh")) {
+                                        /**
+                                         * setStatus, forward 둘 다 사용 x
+                                         * 바로 컨트롤러로 넘어 갈 수 있게끔.
+                                         */
+                                        return ;
+                                    } else {
+                                        /**
+                                         * RestControllerAdvice는 Spring MVC 영역에서 동작하지만!
+                                         * Spring Security 는 MVC 보다 더 앞단에서 동작하기 때문에
+                                         * response.sendError 를 사용해야함.
+                                         */
+                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                                    }
+                                })
+
+
+                        )
+                );
 
 
         return httpSecurity.build();
@@ -149,15 +172,15 @@ public class SecurityConfig {
 
             List<String> roles = jwt.getClaimAsStringList("role");
 
-            if(roles == null){
+            if (roles == null) {
                 return authorities;
             }
 
-            if(roles.contains("ADMIN")){
+            if (roles.contains("ADMIN")) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
             }
 
-            if(roles.contains("USER")) {
+            if (roles.contains("USER")) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
             }
 
