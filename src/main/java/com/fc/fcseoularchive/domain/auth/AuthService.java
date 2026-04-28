@@ -7,6 +7,7 @@ import com.fc.fcseoularchive.domain.auth.dto.TokenResponse;
 import com.fc.fcseoularchive.domain.auth.dto.TokenValues;
 import com.fc.fcseoularchive.global.error.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -125,6 +127,15 @@ public class AuthService {
 
         // 캐시에서 리프레시 토큰 가져오기
         TokenValues tokenValues = tokenCacheService.getRefreshToken(userId);
+
+        /**
+         * NullPointException 발생 시 바로 return
+         */
+        if(tokenValues == null){
+            log.info("[Logout] 이미 캐시가 만료된 유저입니다. ID: {}", userId);
+            return redirectUriLogout;
+        }
+
 
         // 캐시에서 리프레시 토큰 지워주기
         tokenCacheService.removeRefreshToken(userId);

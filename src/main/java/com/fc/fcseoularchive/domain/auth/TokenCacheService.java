@@ -2,7 +2,6 @@ package com.fc.fcseoularchive.domain.auth;
 
 import com.fc.fcseoularchive.domain.auth.dto.TokenValues;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.Token;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
