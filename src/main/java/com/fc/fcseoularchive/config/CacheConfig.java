@@ -35,8 +35,8 @@ public class CacheConfig {
         BET_HISTORY("betHistory", 1800, 10000), // 지난 베팅 기록
         BET_SUMMARY("betSummary", 1800, 10000), // 지난 베팅 기록 요약
 
-        // 리프레시 토큰용도 추가 (1시간 = 3600초, 최대 유저 10000명)
-        REFRESH_TOKENS("refreshTokens", 3600, 10_000);
+        // 리프레시 토큰용도 추가 - 2시간으로 변경 (배포 시 변경 예정)
+        REFRESH_TOKENS("refreshTokens", 7200, 10_000);
 
 
         private final String cacheName;
