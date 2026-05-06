@@ -59,6 +59,10 @@ public class DonationService {
 
         // 기존에 있다면 포인트만 더 하고 끝 (더티체킹으로 따로 저장 x)
         optDonation.get().addPoint(point);
+
+        // 닉네임 변경 시 덮어 쓰기로 (닉네임 변경한 유저 고려)
+        optDonation.get().changeNickname(user.getNickname());
+
     }
 
 
