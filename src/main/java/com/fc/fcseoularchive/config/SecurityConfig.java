@@ -141,8 +141,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173", "https://fc-raichu.vercel.app", "https://fcraichu.inwoohub.com"
-                , "https://www.myfcseoul.com/"
+                "http://localhost:5173",
+                "https://fc-raichu.vercel.app",
+                "https://fcraichu.inwoohub.com",
+                "https://www.myfcseoul.com/"
         ));
 //        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://raichu.inwoohub.com", "https://fc-raichu.vercel.app", "https://fcraichu.inwoohub.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
