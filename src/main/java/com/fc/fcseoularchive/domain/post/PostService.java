@@ -12,6 +12,7 @@ import com.fc.fcseoularchive.domain.user.User;
 import com.fc.fcseoularchive.domain.user.UserRepository;
 import com.fc.fcseoularchive.global.util.FileNameUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -57,6 +59,9 @@ public class PostService {
             throw new ApiException(HttpStatus.CONFLICT, "409", "CONFLICT", "이미 직관 인증을 작성한 경기입니다.");
         }
         // 작성자 == 로그인 유저 확인
+        log.info("토큰에서 꺼낸 유저의 아이디! : {}",loginId);
+        log.info("gutUserId 유저의 아아디! : {}",request.getUserId());
+
         if (!Objects.equals(request.getUserId(), loginId)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "작성하려는 게시글의 유저 아이디와 현재 로그인된 유저의 아이디가 다릅니다.");
         }

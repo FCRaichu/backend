@@ -29,7 +29,7 @@ public class Donation {
     private Player player;
 
     // 반정규화 - donation 랭킹에 사용되는 nickname - fetch join 없이 바로 접근
-    @Column(nullable = false, length = 30, unique = true)
+    @Column(nullable = false, length = 30)
     private String nickname;
 
     private LocalDateTime createdAt;
