@@ -8,6 +8,7 @@ import com.fc.fcseoularchive.domain.user.User;
 import com.fc.fcseoularchive.domain.user.UserRepository;
 import com.fc.fcseoularchive.global.error.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -78,6 +80,8 @@ public class BetService {
         // bet 중인 경기가 없으면 유저 아이디만 반환, 나머지는 null 이나 기본값
         if (game == null) return response;
 
+        log.info("가져오는 경기!!! 문자열 변환!! {}",game.getId());
+
         // gameId가 있으니 bet 에서 포인트 정보, games 에서 opponent, date 가져오기
         Bet bet = betRepository.findByGame_Id(game.getId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "<Database Error> 경기에 대한 bet가 존재하지 않습니다."));
@@ -108,6 +112,7 @@ public class BetService {
             response.setMyDrawPoint(0L);
             response.setMyLosePoint(0L);
         }
+
 
         return response;
     }
