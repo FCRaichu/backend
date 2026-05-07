@@ -269,25 +269,25 @@ public class BetService {
             Long winPoint = betHistory.getWinPoint();
             Long drawPoint = betHistory.getDrawPoint();
             Long losePoint = betHistory.getLosePoint();
-            long payoutPoint = 0L; // 유저의 이득 포인트
+            long payoutPoint = 0L; // 유저의 순 이득 포인트
 
             User user = betHistory.getUser(); // fetch join 으로 이미 로딩된 user
 
             if (gameResult.equals(GameResult.W)) {
-                payoutPoint = 2*winPoint - drawPoint - losePoint;
+                payoutPoint = winPoint - drawPoint - losePoint;
 
                 // w 인 경우 win_point * 2 만큼 유저에게 정산
                 if (winPoint != 0) {
                     user.addPoints((int) (2*winPoint));
                 }
             } else if (gameResult.equals(GameResult.D)) {
-                payoutPoint = 2*drawPoint - winPoint - losePoint;
+                payoutPoint = drawPoint - winPoint - losePoint;
 
                 if (drawPoint != 0) {
                     user.addPoints((int) (2*drawPoint));
                 }
             } else if (gameResult.equals((GameResult.L))) {
-                payoutPoint = 2*losePoint - winPoint - drawPoint;
+                payoutPoint = losePoint - winPoint - drawPoint;
 
                 if (losePoint != 0) {
                     user.addPoints((int) (2*losePoint));
