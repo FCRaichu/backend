@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,7 +148,10 @@ public class GameService {
 
     // admin : 경기 추가
     @Transactional
-    @CacheEvict(value = "guestGames", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "guestGames", allEntries = true),
+            @CacheEvict(value = "betGame", allEntries = true)
+    })
     public void addGame(GameAdminRequest request) {
         Game game = Game.builder()
                 .date(request.getDate())
@@ -178,7 +182,10 @@ public class GameService {
 
     // admin : 경기 1개 정보 수정 (모든 필드 제어 가능)
     @Transactional
-    @CacheEvict(value = "guestGames", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "guestGames", allEntries = true),
+            @CacheEvict(value = "betGame", allEntries = true)
+    })
     public Game updateGame(Long gameId, GameAdminRequest request) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
@@ -201,6 +208,10 @@ public class GameService {
 
     // admin : 경기 1개 정보 수정 (점수, 승패 유무 필드만)
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "guestGames", allEntries = true),
+            @CacheEvict(value = "betGame", allEntries = true)
+    })
     public void updateGameResult(Long gameId, GameAdminResultRequest request) {
         // 특정 필드만 수정
 
@@ -219,7 +230,10 @@ public class GameService {
 
     // admin : 경기 삭제
     @Transactional
-    @CacheEvict(value = "guestGames", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "guestGames", allEntries = true),
+            @CacheEvict(value = "betGame", allEntries = true)
+    })
     public void deleteGame(Long gameId) {
         gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "경기가 존재하지 않습니다."));
