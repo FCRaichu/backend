@@ -4,6 +4,8 @@ import com.fc.fcseoularchive.domain.game.Game;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity @Getter
@@ -17,6 +19,7 @@ public class Bet {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
 
     private Long bettors = 0L; // 베팅한 전체 인원 수

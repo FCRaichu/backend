@@ -10,6 +10,7 @@ import com.fc.fcseoularchive.domain.game.dto.GameResponse;
 import com.fc.fcseoularchive.domain.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cascade;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -234,6 +235,7 @@ public class GameService {
             @CacheEvict(value = "guestGames", allEntries = true),
             @CacheEvict(value = "betGame", allEntries = true)
     })
+
     public void deleteGame(Long gameId) {
         gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "경기가 존재하지 않습니다."));

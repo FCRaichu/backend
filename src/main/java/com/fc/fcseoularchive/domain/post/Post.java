@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +29,7 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
 
     @Column(nullable = false, length = 120)
