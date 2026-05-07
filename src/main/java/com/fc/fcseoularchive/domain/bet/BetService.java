@@ -44,6 +44,8 @@ public class BetService {
         long loss = 0L;
 
         for (BetHistory history : betHistoryList) {
+            if (!history.isSettled()) continue; // 정산 되지 않은 히스토리는 집계 안함
+
             long benefit = history.getPayoutPoint();
 
             totalNumber++;
