@@ -4,6 +4,8 @@ import com.fc.fcseoularchive.domain.game.Game;
 import com.fc.fcseoularchive.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +31,7 @@ public class BetHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
 
     @Column(name = "game_date", nullable = false)
