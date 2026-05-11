@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -218,6 +220,10 @@ public class GameService {
 
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "404", "NOT_FOUND", "존재하지 않는 경기입니다."));
+
+        if(LocalDateTime.now().isBefore(game.getDate().plusHours(2)) ){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "400", "BAD_REQUEST", "끝나지 않은 경기는 정산할 수 없습니다.");
+        }
 
         // 모든 필드 업데이트
         game.adminUpdateForBet(
