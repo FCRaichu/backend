@@ -9,6 +9,7 @@ import com.fc.fcseoularchive.global.error.ApiException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Base64;
 
 @Tag(name = "8. AuthController")
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class AuthController {
                 request.getCode(),
                 request.getCodeVerifier()
         );
+        log.info("Callback 컨트롤러 호출 !! 🔥🔥🔥🔥🔥🔥");
         // access_token만 프론트로 반환
         return ResponseEntity.status(HttpStatus.OK).body(new AccessTokenResponse(token.getAccessToken()));
     }
@@ -47,6 +50,7 @@ public class AuthController {
         TokenResponse token = authService.refreshToken(userId);
 
         System.out.println("발급된 토큰: " + token.getAccessToken());
+        log.info("Refresh 컨트롤러 호출 !! 🔥🔥🔥🔥🔥🔥");
 
         return ResponseEntity.status(HttpStatus.OK).body(new AccessTokenResponse(token.getAccessToken()));
     }
