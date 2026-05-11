@@ -69,10 +69,10 @@ public class BetHistoryRepositoryImpl implements BetHistoryRepositoryQuerydsl{
                                 .otherwise(game.homeTeam),
                         game.date,
                         bet.bettors,
-                        bet.totalPoint,
-                        bet.winPoint,
-                        bet.drawPoint,
-                        bet.losePoint,
+                        betHistory.totalPoint,
+                        betHistory.winPoint,
+                        betHistory.drawPoint,
+                        betHistory.losePoint,
                         game.result,
                         betHistory.payoutPoint
                 ))
