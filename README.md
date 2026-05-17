@@ -1,10 +1,11 @@
-# 🔴⚫ My FC Seoul - Backend
+# ⚫🔴 My FC Seoul - Backend
 
 > **"오직, FC서울 팬들만을 위한 직관 아카이브 프로젝트"**
 
 ## 🔗 관련 링크
 
-- **🚀 서비스 URL (Frontend)**: [https://fc-raichu.vercel.app/](https://fc-raichu.vercel.app/)
+- **🚀 서비스 URL (Frontend)**: [https://www.myfcseoul.com/](https://www.myfcseoul.com/)
+- **📂 API 문서 (Swagger)**: [Swagger UI](https://fcraichu.inwoohub.com/swagger-ui/index.html#)
 - **📽 시연 영상**: [Google Drive Link](https://drive.google.com/file/d/1SaK4jr9wzXs0hiHtA1mv-TAqgKGzTz3f/view?usp=sharing)
 - **📊 발표 자료**: [Figma Deck](https://www.figma.com/deck/4Sn9B5XIb6OVuX72xdNVyU)
 
@@ -23,7 +24,9 @@
 </br>
 
 ## 2. 프로젝트 아키텍쳐
-<!-- 아키텍쳐 사진 -->
+<img width="1200" height="700" alt="Architecture" src="https://github.com/user-attachments/assets/3cd50b80-4129-450a-a82b-cbc3c09a51e0" />
+</br>
+
 
 ## 2. 개발 전략
 
@@ -86,7 +89,7 @@ src/main/java/com/fc/fcseoularchive
 
 | **🍊 Frontend / Design** | **🎈 Backend** | **😎 Backend** |
 | :----------------------: | :-----------: | :-----------: |
-| <img src="https://github.com/kye1115z.png" width="120" height="120"><br/>[@김예은](https://github.com/kye1115z) | <img src="https://github.com/wvwwvv.png" width="120" height="120"><br/>[@강상민](https://github.com/wvwwvv) | <img src="https://github.com/inwoohub.png" width="120" height="120"><br/>[@황인우](https://github.com/inwoohub) |
+| <img src="https://github.com/kye1115z.png" width="120" height="120"><br/>[@김예은](https://github.com/kye1115z) | <img src="https://github.com/wvwwvv.png" width="120" height="120"><br/>[@강상민](https://github.com/wvwwvv) | <img src="https://github.com/user-attachments/assets/0dd65fac-e9c5-4fce-9172-d7c3d330e1d6" width="120" height="120"><br/>[@황인우](https://github.com/inwoohub) |
 | **UI/UX**: 전체 서비스 와이어프레임 설계 및 브랜드 디자인 시스템 구축<br/>**핵심 기능**: 직관 기록 CRUD, 아카이브 필터링, MSW 연동, SVG 애니메이션 구현, 선수 후원 기능 | **기능**: 도메인 설계, 직관 게시글 CRUD, 선수, 랭킹, 경기, 베팅 API 구현, 데이터베이스 모델링 | **기능**: Keycloak 인증 서버 구축 및 연동, 회원 정보 관리 API 개발, 보안 프로토콜설정 |
 
 <br/>
@@ -133,19 +136,19 @@ src/main/java/com/fc/fcseoularchive
 <details><summary>김예은
 </summary>
 
-으아아아아
+- 
 </details>
 
 <details><summary>강상민
 </summary>
 
-으아아아아
+- 
 </details>
 
 <details><summary>황인우
 </summary>
 
-으아아아아
+- 
 </details>
 
 
