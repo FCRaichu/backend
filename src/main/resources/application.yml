@@ -85,12 +85,12 @@ keycloak:
 
 frontend:
   # 로컬 용
-  redirect-uri: http://localhost:5173/login
-  redirect-uri-logout: http://localhost:5173/
+#  redirect-uri: http://localhost:5173/login
+#  redirect-uri-logout: http://localhost:5173/
 
   # 배포용
-#  redirect-uri: https://www.myfcseoul.com/login
-#  redirect-uri-logout: https://www.myfcseoul.com/
+  redirect-uri: https://www.myfcseoul.com/login
+  redirect-uri-logout: https://www.myfcseoul.com/
 
 
 # 시크릿 키는 : https://jwtsecretkeygenerator.com/ko/ 여기서 만듦
