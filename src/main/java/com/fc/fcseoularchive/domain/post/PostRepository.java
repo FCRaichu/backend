@@ -32,7 +32,7 @@ public interface PostRepository extends JpaRepository<Post,Long>, PostRepository
         FROM Post p
         JOIN p.user u
         jOIN p.game g
-        WHERE FUNCTION('YEAR', g.date) = :year
+        WHERE YEAR(g.date) = :year
         GROUP BY u.id, u.nickname
         ORDER BY COUNT(p.id) DESC, u.id ASC
 """)
@@ -52,7 +52,7 @@ public interface PostRepository extends JpaRepository<Post,Long>, PostRepository
         FROM Post p
         JOIN p.user u
         JOIN p.game g
-        WHERE FUNCTION('YEAR', g.date) = :year AND g.result IS NOT NULL
+        WHERE YEAR(g.date) = :year AND g.result IS NOT NULL
         GROUP BY u.id, u.nickname
         ORDER BY (SUM(CASE WHEN g.result = 'W' THEN 1.0 ELSE 0.0 END) / COUNT(p.id)) DESC,
                        COUNT(p.id) DESC,
