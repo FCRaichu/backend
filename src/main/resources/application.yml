@@ -4,10 +4,10 @@ spring:
 
 #  ./gradlew bootRun --args='--server.port=8081'
   datasource:
-    url: jdbc:mysql://localhost:3306/fcraichu?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USER_NAME:root}
-    password: ${MYSQL_ROOT_PASSWORD:1234}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/fcraichu}
+    username: ${SPRING_DATASOURCE_USERNAME:fc_app}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
